@@ -1,0 +1,126 @@
+name: discovery
+description: Client discovery and requirements gathering workflow.
+version: "1.0.0"
+
+inputs:
+  client_name:
+    type: string
+    description: Client or project name
+    required: true
+    prompt: "Client name?"
+  engagement_type:
+    type: string
+    description: "Type of engagement: implementation, optimization, migration, integration"
+    required: true
+    default: implementation
+    prompt: "Engagement type?"
+  org_alias:
+    type: org-alias
+    description: Salesforce org alias (if available)
+    required: false
+    prompt: "Org alias (blank to skip)?"
+
+steps:
+  - id: step-01-intake
+    name: Discovery Intake
+    description: Guided stakeholder interview to gather business context, pain points, and requirements.
+    agent: discovery-intake
+    inputs:
+      client_name: playbook.inputs.client_name
+      engagement_type: playbook.inputs.engagement_type
+    outputs:
+      intake_notes:
+        type: file
+        description: Structured interview notes with business context and initial requirements
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-02-org-analysis
+    name: Org Analysis
+    description: Analyze existing Salesforce org metadata, automation, and technical debt.
+    agent: skill
+    skill: sf-org-analyze
+    inputs:
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      org_analysis:
+        type: file
+        description: Org analysis report with metadata inventory and health scores
+    on_failure: skip
+
+  - id: step-03-gap-analysis
+    name: Gap Analysis
+    description: Compare current org state against gathered requirements to identify gaps.
+    agent: gap-analyst
+    inputs:
+      intake_notes: steps.step-01-intake.outputs.intake_notes
+      org_analysis: steps.step-02-org-analysis.outputs.org_analysis
+    outputs:
+      gap_analysis:
+        type: file
+        description: Gap matrix mapping requirements to current capabilities
+    gate: all-requirements-mapped
+    on_failure: retry
+
+  - id: step-04-requirements
+    name: Requirements Documentation
+    description: Formalize requirements and generate user stories from intake and gap analysis.
+    agent: requirements-writer
+    inputs:
+      intake_notes: steps.step-01-intake.outputs.intake_notes
+      gap_analysis: steps.step-03-gap-analysis.outputs.gap_analysis
+      client_name: playbook.inputs.client_name
+      engagement_type: playbook.inputs.engagement_type
+    outputs:
+      requirements:
+        type: file
+        description: Formal requirements document (functional + non-functional)
+      user_stories:
+        type: file
+        description: User stories with acceptance criteria
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-05-estimate
+    name: Scope Estimation
+    description: Estimate effort for requirements in session-based units.
+    agent: scope-estimator
+    inputs:
+      requirements: steps.step-04-requirements.outputs.requirements
+    outputs:
+      estimate:
+        type: file
+        description: Effort estimate by workstream with complexity ratings
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-06-package
+    name: Discovery Package Assembly
+    description: Assemble all discovery outputs into a deliverable package directory.
+    agent: skill
+    skill: sf-handoff
+    inputs:
+      intake_notes: steps.step-01-intake.outputs.intake_notes
+      gap_analysis: steps.step-03-gap-analysis.outputs.gap_analysis
+      requirements: steps.step-04-requirements.outputs.requirements
+      user_stories: steps.step-04-requirements.outputs.user_stories
+      estimate: steps.step-05-estimate.outputs.estimate
+    outputs:
+      discovery_package:
+        type: directory
+        description: Complete discovery deliverable package
+    on_failure: halt
+
+outputs:
+  discovery_package:
+    type: directory
+    description: Complete discovery deliverable package
+    source_step: step-06-package
+  requirements:
+    type: file
+    description: Formal requirements document
+    source_step: step-04-requirements
+  estimate:
+    type: file
+    description: Effort estimate
+    source_step: step-05-estimate
