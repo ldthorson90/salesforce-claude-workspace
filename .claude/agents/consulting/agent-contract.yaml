@@ -1,0 +1,209 @@
+# Consulting Subagent Input/Output Contracts
+# Version: 1.0.0
+#
+# Each agent contract defines:
+#   - What the agent does
+#   - What inputs it requires
+#   - What outputs it produces
+#   - Which MCP tools it needs access to
+#   - What model tier is appropriate
+#
+# The orchestrator reads these contracts to validate inputs before invocation
+# and to verify outputs after completion.
+
+schema_version: "1.0.0"
+
+# ---------------------------------------------------------------------------
+# Contract schema
+# ---------------------------------------------------------------------------
+# agent_name:      string, required  — kebab-case identifier matching the agent
+# description:     string, required  — what this agent does in one sentence
+# inputs:          map, required     — input fields the agent expects
+#   <key>:
+#     type:        string, required  — string | file | list | map | boolean | org-alias
+#     required:    boolean           — default true
+#     description: string, required  — what this input represents
+# outputs:         map, required     — what the agent produces
+#   <key>:
+#     type:        string, required  — string | file | list | map | boolean
+#     description: string, required  — what this output represents
+# tools_required:  list              — MCP tool names or tool categories the agent uses
+# model_tier:      string, required  — opus | sonnet | haiku
+
+# ===========================================================================
+# Agent Contracts
+# ===========================================================================
+
+agents:
+
+  # -------------------------------------------------------------------------
+  # Requirements Analyst
+  # -------------------------------------------------------------------------
+  requirements-analyst:
+    agent_name: requirements-analyst
+    description: Extract, structure, and validate business requirements from discovery inputs.
+    inputs:
+      org_analysis:
+        type: file
+        required: false
+        description: Org analysis report from sf-org-analyze (if org is available)
+      source_documents:
+        type: list
+        required: false
+        description: Paths to SOW, requirements docs, meeting notes, or other input files
+      client_name:
+        type: string
+        required: true
+        description: Client name for contextual naming and file output
+      engagement_type:
+        type: string
+        required: true
+        description: "Type of engagement: implementation, optimization, migration, integration"
+    outputs:
+      requirements_document:
+        type: file
+        description: Structured requirements document with functional and non-functional requirements
+      gap_analysis:
+        type: file
+        description: Gaps identified between current state (org analysis) and desired state (requirements)
+      questions:
+        type: list
+        description: Open questions that need client clarification before design can proceed
+    tools_required:
+      - Read
+      - Write
+      - Grep
+      - Glob
+      - mcp__context7__query-docs
+    model_tier: opus
+
+  # -------------------------------------------------------------------------
+  # Solution Architect
+  # -------------------------------------------------------------------------
+  solution-architect:
+    agent_name: solution-architect
+    description: Design a Salesforce solution architecture from validated requirements.
+    inputs:
+      requirements:
+        type: file
+        required: true
+        description: Approved requirements document
+      priorities:
+        type: list
+        required: true
+        description: Prioritized feature/capability list
+      engagement_type:
+        type: string
+        required: true
+        description: Engagement type to guide architecture patterns
+      org_analysis:
+        type: file
+        required: false
+        description: Existing org state analysis (for optimization/migration engagements)
+      constraints:
+        type: list
+        required: false
+        description: Known constraints (license limits, timeline, budget, existing tech stack)
+    outputs:
+      architecture_document:
+        type: file
+        description: >
+          Solution architecture covering data model (ERD), automation design
+          (trigger/flow decisions), integration patterns, security model,
+          and deployment strategy
+      decision_records:
+        type: file
+        description: Architecture Decision Records (ADRs) with context, decision, and rationale
+      data_model:
+        type: file
+        description: Entity-Relationship Diagram in Mermaid format
+      risk_register:
+        type: list
+        description: Identified risks with likelihood, impact, and mitigation strategies
+    tools_required:
+      - Read
+      - Write
+      - Grep
+      - Glob
+      - Skill
+      - mcp__context7__query-docs
+      - mcp__context7__resolve-library-id
+    model_tier: opus
+
+  # -------------------------------------------------------------------------
+  # Compliance Reviewer
+  # -------------------------------------------------------------------------
+  compliance-reviewer:
+    agent_name: compliance-reviewer
+    description: Review a solution design for Salesforce platform limits, security best practices, and governance compliance.
+    inputs:
+      architecture_document:
+        type: file
+        required: true
+        description: Solution architecture document to review
+      decision_records:
+        type: file
+        required: false
+        description: ADRs to validate against platform constraints
+      org_alias:
+        type: org-alias
+        required: false
+        description: Target org for limit checks (if available)
+    outputs:
+      compliance_report:
+        type: file
+        description: >
+          Compliance findings covering governor limit risks, sharing model
+          concerns, CRUD/FLS enforcement, data volume projections, and
+          platform limit headroom
+      blockers:
+        type: list
+        description: Critical issues that must be resolved before implementation
+      recommendations:
+        type: list
+        description: Non-blocking recommendations for improvement
+    tools_required:
+      - Read
+      - Grep
+      - mcp__context7__query-docs
+      - mcp__sf-advanced__query_records
+      - mcp__sf-advanced__sobject_describe
+    model_tier: sonnet
+
+  # -------------------------------------------------------------------------
+  # Estimation Analyst
+  # -------------------------------------------------------------------------
+  estimation-analyst:
+    agent_name: estimation-analyst
+    description: Produce session-based effort estimates from an architecture document and decision log.
+    inputs:
+      architecture_document:
+        type: file
+        required: true
+        description: Solution architecture document with scope definition
+      decision_records:
+        type: file
+        required: false
+        description: ADRs that may affect complexity assessment
+      complexity_overrides:
+        type: map
+        required: false
+        description: >
+          Manual complexity adjustments for specific components
+          (e.g., {"integration-x": "high"} if the user knows it will be hard)
+    outputs:
+      effort_estimate:
+        type: file
+        description: >
+          Effort estimate broken down by workstream (data model, automation,
+          integration, UI, testing, deployment). Uses session-based units
+          (not hours/days). Includes assumptions, risks, and confidence level.
+      workstream_breakdown:
+        type: map
+        description: >
+          Map of workstream to session count estimate with complexity rating
+          (e.g., {"data-model": {"sessions": 3, "complexity": "medium"}})
+    tools_required:
+      - Read
+      - Write
+    model_tier: sonnet

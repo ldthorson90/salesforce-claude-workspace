@@ -1,0 +1,194 @@
+# Consulting Playbook Definition Schema
+# Version: 1.0.0
+#
+# Playbooks define multi-step consulting workflows that sequence skills, agents,
+# and human gates into repeatable engagement patterns. They are stored in
+# .claude/playbooks/ and executed via /sf-playbook.
+
+schema_version: "1.0.0"
+
+# ---------------------------------------------------------------------------
+# Top-level playbook fields
+# ---------------------------------------------------------------------------
+# name:         string, required  — kebab-case identifier (e.g., discovery-to-design)
+# description:  string, required  — one-line summary of the playbook purpose
+# version:      string, required  — semver (e.g., 1.0.0)
+# inputs:       map, required     — data the playbook needs before it can start
+# steps:        list, required    — ordered sequence of steps to execute
+# outputs:      map, required     — final deliverables produced by the playbook
+
+# ---------------------------------------------------------------------------
+# inputs.<key> schema
+# ---------------------------------------------------------------------------
+# type:         string, required  — string | boolean | list | org-alias | file-path
+# description:  string, required  — what this input represents
+# required:     boolean           — default true
+# default:      any               — default value if not provided
+# prompt:       string            — question to ask the user if value is missing
+
+# ---------------------------------------------------------------------------
+# steps[] schema
+# ---------------------------------------------------------------------------
+# id:           string, required  — unique step identifier (kebab-case, sequential)
+# name:         string, required  — human-readable step name
+# description:  string, required  — what this step accomplishes
+# agent:        string, required  — one of:
+#                 "user"    — pause and ask the user for input or approval
+#                 "skill"   — invoke a Claude Code skill (specify in `skill` field)
+#                 <agent-name> — invoke a subagent from .claude/agents/consulting/
+# skill:        string            — skill name to invoke (required when agent == "skill")
+# inputs:       map               — key-value mapping; values can reference:
+#                 playbook.inputs.<key>  — a playbook-level input
+#                 steps.<id>.outputs.<key> — output from a prior step
+#                 literal values
+# outputs:      map               — what this step produces
+#   <key>:
+#     type:     string            — string | file | list | map | boolean
+#     description: string         — what this output represents
+# gate:         string            — condition that must pass before proceeding
+#                                   common gates: "client-approved", "code-analyzer-clean",
+#                                   "user-confirmed", "tests-passing"
+# checkpoint:   boolean           — if true, save state after this step so the playbook
+#                                   can resume here if interrupted (default: false)
+# on_failure:   string            — "retry" | "skip" | "halt" (default: "halt")
+
+# ---------------------------------------------------------------------------
+# outputs.<key> schema (final deliverables)
+# ---------------------------------------------------------------------------
+# type:         string, required  — file | directory | list | map | string
+# description:  string, required  — what this deliverable is
+# source_step:  string            — step ID that produces this output
+
+# ===========================================================================
+# Example: Discovery-to-Design playbook skeleton
+# ===========================================================================
+
+example_playbook:
+  name: discovery-to-design
+  description: Run a full consulting discovery phase and produce a solution design document.
+  version: "1.0.0"
+
+  inputs:
+    client_name:
+      type: string
+      description: Client or project name for file naming and context
+      required: true
+      prompt: "What is the client or project name?"
+    engagement_type:
+      type: string
+      description: Type of engagement (implementation, optimization, migration, integration)
+      required: true
+      default: implementation
+      prompt: "What type of engagement is this?"
+    org_alias:
+      type: org-alias
+      description: Salesforce org alias to analyze (must be pre-authenticated)
+      required: false
+      prompt: "Org alias to connect to (leave blank to skip org analysis)?"
+    requirements_doc:
+      type: file-path
+      description: Path to existing requirements or SOW document (if available)
+      required: false
+      prompt: "Path to requirements/SOW document (leave blank if none)?"
+
+  steps:
+    - id: step-01-discovery
+      name: Requirements Discovery
+      description: Gather and structure business requirements from available inputs.
+      agent: skill
+      skill: sf-org-analyze
+      inputs:
+        org_alias: playbook.inputs.org_alias
+      outputs:
+        org_analysis:
+          type: file
+          description: Org analysis report with metadata inventory and tech debt findings
+        requirements_summary:
+          type: file
+          description: Structured requirements extracted from SOW and org analysis
+      checkpoint: true
+      on_failure: halt
+
+    - id: step-02-stakeholder-review
+      name: Stakeholder Review
+      description: Present discovery findings to the user for validation and gap identification.
+      agent: user
+      inputs:
+        org_analysis: steps.step-01-discovery.outputs.org_analysis
+        requirements_summary: steps.step-01-discovery.outputs.requirements_summary
+      outputs:
+        approved_requirements:
+          type: file
+          description: User-validated requirements with any additions or corrections
+        priority_list:
+          type: list
+          description: Prioritized list of features/capabilities
+      gate: client-approved
+      checkpoint: true
+      on_failure: halt
+
+    - id: step-03-architecture
+      name: Solution Architecture
+      description: Produce a solution architecture based on approved requirements.
+      agent: skill
+      skill: sf-decide
+      inputs:
+        requirements: steps.step-02-stakeholder-review.outputs.approved_requirements
+        priorities: steps.step-02-stakeholder-review.outputs.priority_list
+        engagement_type: playbook.inputs.engagement_type
+      outputs:
+        architecture_doc:
+          type: file
+          description: Solution architecture document with data model, integration patterns, and automation design
+        decision_log:
+          type: file
+          description: Architecture decision records with rationale
+      checkpoint: true
+      on_failure: halt
+
+    - id: step-04-estimation
+      name: Effort Estimation
+      description: Estimate effort for the proposed solution in session-based units.
+      agent: estimation-analyst
+      inputs:
+        architecture: steps.step-03-architecture.outputs.architecture_doc
+        decisions: steps.step-03-architecture.outputs.decision_log
+      outputs:
+        estimate:
+          type: file
+          description: Effort estimate broken down by workstream and component
+      on_failure: halt
+
+    - id: step-05-design-review
+      name: Design Review Gate
+      description: Present complete design package for final approval before handoff.
+      agent: user
+      inputs:
+        architecture: steps.step-03-architecture.outputs.architecture_doc
+        decisions: steps.step-03-architecture.outputs.decision_log
+        estimate: steps.step-04-estimation.outputs.estimate
+      outputs:
+        approval:
+          type: boolean
+          description: Whether the design package is approved for implementation
+      gate: client-approved
+      checkpoint: true
+      on_failure: halt
+
+  outputs:
+    architecture_document:
+      type: file
+      description: Complete solution architecture document
+      source_step: step-03-architecture
+    decision_log:
+      type: file
+      description: Architecture Decision Records
+      source_step: step-03-architecture
+    effort_estimate:
+      type: file
+      description: Session-based effort estimate
+      source_step: step-04-estimation
+    approved_requirements:
+      type: file
+      description: Validated and prioritized requirements
+      source_step: step-02-stakeholder-review

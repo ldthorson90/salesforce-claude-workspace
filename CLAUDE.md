@@ -86,6 +86,19 @@ This workspace is used for:
 - **`/sf-cpq`** — CPQ: product rules, price rules, quote templates, approvals, guided selling
 - **`/sf-omnistudio`** — OmniStudio: OmniScripts, FlexCards, Integration Procedures, DataRaptors
 
+### Consulting Lifecycle
+- **`/sf-discovery <engagement-type>`** — Guided requirements gathering with stakeholder mapping
+- **`/sf-gap-analysis <org-alias>`** — Current vs desired state analysis with gap classification
+- **`/sf-data-model design|review|extend`** — Interactive data model designer with platform limit validation
+- **`/sf-automation-map design|audit|conflict-check`** — Process-to-automation mapping with decision guides
+- **`/sf-solution-design generate|template`** — Complete pre-build solution design document
+- **`/sf-compliance-check <org-alias|source-path>`** — Pre-delivery quality gate (code, architecture, docs)
+- **`/sf-estimate <requirements-file>`** — Complexity-based scope estimation (sessions, not hours)
+- **`/sf-user-story <input-file>`** — Convert notes/transcripts to formal user stories
+
+### Workflow Orchestration
+- **`/sf-playbook <playbook-name>`** — Run orchestrated consulting playbooks with gates and checkpoints
+
 ### Architecture & Delivery
 - **`/sf-decide`** — Route architecture questions to the right decision guide (8 frameworks)
 - **`/sf-handoff design-doc|admin-guide|deploy-runbook`** — Client deliverables for project close
