@@ -48,9 +48,15 @@ sf org display -o <ORG_ALIAS> --json
 ```
 
 **CRITICAL**: Check the `instanceUrl` and `orgType` in the response.
-- If `orgType` contains "Production" or the instance is a production URL, warn the user:
-  "This is a PRODUCTION org. Per consulting governance, AI-generated code should only target Developer Sandboxes or Scratch Orgs. Proceed with read-only operations only?"
-- If sandbox/scratch, proceed normally.
+
+- If `orgType` contains "Production" or `isSandbox` is false and `isScratch` is false:
+  - **Stop the normal setup flow.**
+  - Print: "PRODUCTION ORG DETECTED: `<ORG_ALIAS>` is a production org. Per consulting governance, AI-generated code and automated deployments must never target production. This workspace will NOT configure write-capable MCP tools for this org."
+  - Skip Steps 3 and 4 (toolset selection and settings.json update) entirely.
+  - Instead, print: "You can use this alias for read-only analysis only (org health checks, metadata review, SOQL queries via the existing MCP servers). Run `/sf-org-analyze <ORG_ALIAS>` or `/sf-health-check <ORG_ALIAS>` to proceed safely."
+  - **Do not offer to proceed. Do not configure the DX MCP server for this org.**
+
+- If sandbox or scratch org (`isSandbox: true` or `isScratch: true`): proceed normally.
 
 ### Step 3: Select Toolsets
 

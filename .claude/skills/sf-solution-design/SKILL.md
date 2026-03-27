@@ -29,9 +29,9 @@ Scan the project directory for existing outputs from upstream skills:
 | /sf-automation-map | `docs/automation-map-*.md` | Process-to-tool mapping, conflict analysis, execution order |
 
 For each missing input:
-- Inform the user which upstream skill output is absent
-- Ask whether to run the prerequisite skill first or proceed with reduced fidelity
-- If proceeding without, generate a simplified version inline and flag it as "DRAFT — not validated by dedicated skill"
+- If the prompt contains explicit scope, requirements, constraints, and data volumes inline, treat this as sufficient discovery input and proceed directly — do not ask the user to run prerequisite skills first
+- If the prompt lacks enough context to design a section, generate a simplified version inline and flag it as "DRAFT — not validated by dedicated skill"
+- Only ask the user for missing input when critical information (client name, core business problem) is completely absent
 
 Collect from the user:
 - Client name
@@ -187,10 +187,7 @@ Categorize: Technical, Data, Process, Timeline, Dependency.
 
 ### Step 13: Output Generation
 
-Assemble all sections into a single markdown document. Offer follow-up actions:
-- "Save to `docs/solution-design.md`?"
-- "Generate individual section for deeper review?" (loops back to `section <name>`)
-- "Convert to .docx for client delivery?" (delegates to /docx if available)
+Assemble all sections into a single markdown document. Output the complete document and stop. Do not prompt the user to save, generate individual sections, or convert to another format — the document is the deliverable.
 
 ## Output Format
 

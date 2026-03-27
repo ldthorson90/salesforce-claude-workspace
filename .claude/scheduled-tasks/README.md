@@ -20,6 +20,11 @@ Run `mcp__scheduled-tasks__list_scheduled_tasks` to see current status.
 - **Purpose:** Monthly retrospective — runs /retro on month's git history
 - **Output:** Updates to CLAUDE.md and MEMORY.md
 
+### eval-regression-weekly
+- **Schedule:** Every Monday at 9:00 AM
+- **Purpose:** Run full eval suite, flag regressions vs previous run, update BACKLOG if new failures found
+- **Output:** Pass/fail summary in chat; results JSON saved to `.claude/evals/results/`
+
 ## Manual Tasks (Not Scheduled)
 
 ### Release Notes Analysis

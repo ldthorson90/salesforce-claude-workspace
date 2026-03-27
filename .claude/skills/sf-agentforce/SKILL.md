@@ -645,6 +645,12 @@ sf project deploy validate \
 
 ---
 
+## Output Rules
+
+- Never use `...` as a placeholder in any section — prose, YAML, code blocks, or configuration examples. Write every section out completely.
+- Do not add meta-commentary about being an AI or being evaluated.
+- Every topic, action, and configuration block must be fully specified, not stubbed.
+
 ## Context7 References
 
 Query `/damecek/salesforce-documentation-context` for:

@@ -189,3 +189,4 @@ Compile the full data model document.
 - Every custom object needs a clear owner (who maintains the data).
 - Validate data volume estimates early. Objects expecting 10M+ records need selective query design from the start.
 - For `extend` mode: never propose changes that break existing automation or reports without flagging the risk.
+- In `review` mode, produce all six output sections from the Output Format (Entity Summary through Implementation Notes). Do not substitute alternate section headers. Section **5. Design Decisions** is mandatory in review mode and must state the corrected/recommended design choices for each issue found — not just describe the problems. Problems belong in the Object Detail section or as issue callouts; Design Decisions states what to replace them with and why.
