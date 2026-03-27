@@ -1,6 +1,6 @@
 # Salesforce Claude Workspace
 
-**43 Claude Code skills, 7 consulting playbooks, 17 subagents, 3 MCP servers, and 4 validation hooks for independent Salesforce consultants.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
+**43 Claude Code skills, 7 consulting playbooks, 17 subagents, 3 MCP servers, and 4 validation hooks for Salesforce professionals.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
 
 ---
 
