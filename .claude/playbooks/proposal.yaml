@@ -1,0 +1,136 @@
+name: proposal
+description: New business proposal workflow — from prospect intake to a delivered proposal document.
+version: "1.0.0"
+
+inputs:
+  prospect_name:
+    type: string
+    description: Prospect company name
+    required: true
+    prompt: "Prospect company name?"
+  contact_name:
+    type: string
+    description: Primary contact at the prospect
+    required: true
+    prompt: "Primary contact name?"
+  engagement_type:
+    type: string
+    description: "Type of engagement: implementation, optimization, migration, integration, advisory"
+    required: true
+    default: implementation
+    prompt: "Engagement type?"
+  has_org_access:
+    type: boolean
+    description: Whether Claude has org access for analysis
+    required: true
+    default: false
+    prompt: "Do you have org access for analysis? (true/false)"
+  org_alias:
+    type: org-alias
+    description: Salesforce org alias (required if has_org_access is true)
+    required: false
+    prompt: "Org alias (blank to skip)?"
+
+steps:
+  - id: step-01-prospect-intake
+    name: Prospect Intake
+    description: Guided interview to understand the prospect's business, current Salesforce state, pain points, and desired outcomes.
+    agent: discovery-intake
+    inputs:
+      prospect_name: playbook.inputs.prospect_name
+      contact_name: playbook.inputs.contact_name
+      engagement_type: playbook.inputs.engagement_type
+    outputs:
+      prospect_notes:
+        type: file
+        description: Structured intake notes with business context, pain points, and success criteria
+    checkpoint: false
+    on_failure: halt
+
+  - id: step-02-org-analyzer
+    name: Org Analysis
+    description: Snapshot of the prospect's current Salesforce org — metadata, automation, tech debt, and data model.
+    agent: gap-analyst
+    when: playbook.inputs.has_org_access == true
+    inputs:
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      org_snapshot:
+        type: file
+        description: Current state summary of the prospect's org
+    checkpoint: false
+    on_failure: skip
+
+  - id: step-03-capability-assessor
+    name: Capability Assessment
+    description: Map prospect requirements against Salesforce capabilities — identify gaps, out-of-box vs custom, and complexity classification.
+    agent: gap-analyst
+    inputs:
+      prospect_notes: steps.step-01-prospect-intake.outputs.prospect_notes
+      org_snapshot: steps.step-02-org-analyzer.outputs.org_snapshot
+    outputs:
+      capability_assessment:
+        type: file
+        description: Requirement-to-capability mapping with build/buy/configure classification
+    checkpoint: false
+    on_failure: halt
+
+  - id: step-04-scope-estimator
+    name: Scope Estimation
+    description: Session-based complexity estimate derived from the capability assessment.
+    agent: scope-estimator
+    inputs:
+      capability_assessment: steps.step-03-capability-assessor.outputs.capability_assessment
+    outputs:
+      estimate:
+        type: file
+        description: T-shirt sized estimate by category with session budgets and risk multipliers
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-05-sow-builder
+    name: Statement of Work
+    description: Generate a Statement of Work from requirements and estimates.
+    agent: sow-builder
+    inputs:
+      prospect_notes: steps.step-01-prospect-intake.outputs.prospect_notes
+      capability_assessment: steps.step-03-capability-assessor.outputs.capability_assessment
+      estimate: steps.step-04-scope-estimator.outputs.estimate
+    outputs:
+      sow_draft:
+        type: file
+        description: Complete SOW with scope, phases, deliverables, assumptions, and RACI
+    checkpoint: false
+    on_failure: halt
+
+  - id: step-06-proposal-assembler
+    name: Proposal Assembly
+    description: Assemble the final proposal document combining executive summary, capability overview, SOW, and pricing.
+    agent: sow-builder
+    inputs:
+      prospect_notes: steps.step-01-prospect-intake.outputs.prospect_notes
+      sow_draft: steps.step-05-sow-builder.outputs.sow_draft
+    outputs:
+      proposal:
+        type: file
+        description: Client-ready proposal document
+    checkpoint: true
+    on_failure: halt
+
+outputs:
+  proposal:
+    type: file
+    description: Client-ready proposal document
+    source_step: step-06-proposal-assembler
+  sow_draft:
+    type: file
+    description: Statement of Work
+    source_step: step-05-sow-builder
+  estimate:
+    type: file
+    description: Scope estimate
+    source_step: step-04-scope-estimator
+  capability_assessment:
+    type: file
+    description: Capability assessment and gap analysis
+    source_step: step-03-capability-assessor

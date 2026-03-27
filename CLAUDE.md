@@ -76,6 +76,8 @@ This workspace is used for:
 - **`/sf-org-analyze <org-alias>`** — Analyze existing org metadata, automation, tech debt (read-only)
 - **`/sf-migration plan|mapping|template`** — Data migration: field mapping, ETL, Bulk API, validation
 - **`/sf-debug logs|governor|query|async`** — Troubleshoot: debug logs, governor limits, SOQL performance
+- **`/sf-health-check <org-alias>`** — Org health scorecard: governor limits, metadata hygiene, automation, security, data quality, tech debt
+- **`/sf-release-notes <release>`** — Filter Salesforce release notes by active features; Ollama-classified impact summary with breaking changes
 
 ### Cloud Products
 - **`/sf-sales`** — Sales Cloud: opportunities, forecasting, territories, products, lead management
@@ -85,6 +87,10 @@ This workspace is used for:
 - **`/sf-commerce`** — B2C Commerce: storefront, catalog, checkout, SCAPI, cartridges, PWA Kit
 - **`/sf-cpq`** — CPQ: product rules, price rules, quote templates, approvals, guided selling
 - **`/sf-omnistudio`** — OmniStudio: OmniScripts, FlexCards, Integration Procedures, DataRaptors
+
+### Client-Facing
+- **`/sf-demo-script <feature> <persona>`** — Persona-based demo walkthrough: click-by-click steps, talking points, edge case recovery, pre-demo checklist
+- **`/sf-client-switch <client-name>`** — Load full client context in < 5s: org auth, recent git, Obsidian open items, active playbooks
 
 ### Consulting Lifecycle
 - **`/sf-discovery <engagement-type>`** — Guided requirements gathering with stakeholder mapping
@@ -98,6 +104,7 @@ This workspace is used for:
 - **`/sf-sow-builder`** — Generate SOW from requirements + estimates (overview, scope, phases, RACI, change mgmt)
 - **`/sf-status-update`** — Client-facing status report from git history (business language, no jargon)
 - **`/sf-change-request`** — Scope change impact analysis with effort delta and recommendation
+- **`/sf-cert-prep <cert>`** — Certification study: scenario, walkthrough, deep-dive, exam-sim modes for 9 cert tracks
 
 ### Workflow Orchestration
 - **`/sf-playbook <playbook-name>`** — Run orchestrated consulting playbooks with gates and checkpoints
@@ -110,6 +117,7 @@ This workspace is used for:
 - **`/sf-playbook investigate`** — Issue investigation: symptoms, diagnosis, impact, solution, change request
 - **`/sf-playbook enhance`** — Enhancement request: intake, impact, design delta, estimate, build handoff
 - **`/sf-playbook weekly-review`** — Multi-client weekly status: per-client reports, health checks, Obsidian summary
+- **`/sf-playbook proposal`** — New business proposal: prospect intake → org analysis → capability assessment → estimate → SOW → proposal doc
 
 ### Architecture & Delivery
 - **`/sf-decide`** — Route architecture questions to the right decision guide (8 frameworks)
@@ -129,6 +137,18 @@ This workspace is used for:
 | Knowledge | `release-notes-analyst`, `cert-prep-coach` |
 
 Agent contracts are defined in `.claude/agents/consulting/agent-contract.yaml`.
+
+## Scheduled Tasks
+
+Automated recurring tasks managed via Claude Code scheduled tasks MCP. See `.claude/scheduled-tasks/README.md` for full details.
+
+| Task | Schedule | Purpose |
+|------|----------|---------|
+| `weekly-client-review` | Mon 8:30 AM | Runs `/sf-playbook weekly-review` for all active clients |
+| `org-health-checks` | Fri 4:00 PM | Runs `/sf-health-check` per connected org, saves reports |
+| `engagement-retro-reminder` | Last Fri of month | Runs `/retro` on month's git history |
+
+**Manual (not scheduled):** `/sf-release-notes` — run 3× per year around Salesforce releases.
 
 ## MCP Servers
 

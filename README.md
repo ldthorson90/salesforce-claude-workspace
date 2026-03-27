@@ -1,6 +1,6 @@
 # Salesforce Claude Workspace
 
-**24 Claude Code skills, 3 MCP servers, and 4 validation hooks for independent Salesforce consultants.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
+**37 Claude Code skills, 7 consulting playbooks, 17 subagents, 3 MCP servers, and 4 validation hooks for independent Salesforce consultants.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
 
 ---
 
@@ -26,7 +26,7 @@ Claude Code automatically loads the skills, hooks, and MCP servers from `.claude
 
 ---
 
-## Skills (24)
+## Skills (37)
 
 ### Setup & Scaffolding
 
@@ -71,10 +71,36 @@ Claude Code automatically loads the skills, hooks, and MCP servers from `.claude
 
 | Skill | What it does |
 |---|---|
-| `/sf-deploy` | Deploy with production blocker, Code Analyzer gate, test run, coverage report, git tag |
+| `/sf-deploy` | Deploy with production blocker, Code Analyzer gate, test run, coverage report |
 | `/sf-org-analyze` | Analyze existing org metadata, automation, Apex health, security (read-only) |
 | `/sf-migration` | Data migration: field mapping, ETL patterns, Bulk API, external IDs, validation |
 | `/sf-debug` | Debug logs, governor limit diagnosis, SOQL query plans, async job tracking |
+| `/sf-health-check` | Org health scorecard: governor limits, metadata hygiene, automation, security, data quality, tech debt |
+| `/sf-release-notes` | Filter Salesforce release notes by active features; Ollama-classified impact summary with breaking changes |
+
+### Client-Facing
+
+| Skill | What it does |
+|---|---|
+| `/sf-demo-script` | Persona-based demo walkthroughs: click-by-click steps, talking points, edge case recovery |
+| `/sf-client-switch` | Load full client context in < 5s: org auth, recent git activity, Obsidian open items, active playbooks |
+
+### Consulting Lifecycle
+
+| Skill | What it does |
+|---|---|
+| `/sf-discovery` | Guided requirements gathering: stakeholder interview, business process mapping |
+| `/sf-gap-analysis` | Current vs desired state: classify requirements as met, partial, or gap |
+| `/sf-data-model` | Interactive data model designer with ERD generation and platform limit validation |
+| `/sf-automation-map` | Map business processes to automation tools with conflict detection |
+| `/sf-solution-design` | Complete pre-build solution design document |
+| `/sf-compliance-check` | Pre-delivery quality gate: code, architecture, documentation standards |
+| `/sf-estimate` | Session-based complexity estimation with T-shirt sizing and risk multipliers |
+| `/sf-user-story` | Convert notes and transcripts to formal user stories with acceptance criteria |
+| `/sf-sow-builder` | Generate Statement of Work: scope, phases, deliverables, assumptions, RACI |
+| `/sf-status-update` | Client-facing status report from git history — business language, no jargon |
+| `/sf-change-request` | Scope change impact analysis with effort delta and formal change request |
+| `/sf-cert-prep` | Certification study: scenario, walkthrough, deep-dive, exam-sim modes for 9 cert tracks |
 
 ### Architecture & Delivery
 
@@ -82,6 +108,55 @@ Claude Code automatically loads the skills, hooks, and MCP servers from `.claude
 |---|---|
 | `/sf-decide` | Route architecture questions to Salesforce decision guides (8 domains) |
 | `/sf-handoff` | Generate client deliverables: solution design doc, admin guide, deployment runbook |
+
+---
+
+## Consulting Playbooks (7)
+
+Orchestrated multi-step workflows that sequence skills and subagents with checkpoints.
+
+```
+/sf-playbook <name>
+```
+
+| Playbook | What it does |
+|---|---|
+| `discovery` | Client intake → org analysis → gap analysis → requirements → estimate |
+| `design` | Data model → automation map → integration → security → solution design assembly |
+| `build` | Scaffold → TDD tests → implement → compliance check → deploy |
+| `deliver` | Compliance gate → deliverables → training materials → knowledge capture |
+| `investigate` | Symptoms → diagnosis → impact → solution → change request |
+| `enhance` | Intake → impact analysis → design delta → estimate → build handoff |
+| `weekly-review` | Per-client status reports → health checks → Obsidian summary |
+| `proposal` | Prospect intake → org analysis → capability assessment → estimate → SOW → proposal doc |
+
+---
+
+## Subagents (17)
+
+Specialized consulting agents in `.claude/agents/consulting/`, invoked automatically from playbooks.
+
+| Category | Agents |
+|---|---|
+| Discovery & Requirements | `discovery-intake`, `gap-analyst`, `requirements-writer`, `stakeholder-mapper` |
+| Design | `data-modeler`, `automation-mapper`, `security-designer`, `integration-architect` |
+| Delivery | `scope-estimator`, `sow-builder`, `status-reporter`, `demo-scripter`, `change-request-analyst` |
+| Investigation | `issue-diagnostician`, `impact-analyzer` |
+| Knowledge | `release-notes-analyst`, `cert-prep-coach` |
+
+---
+
+## Scheduled Tasks
+
+Automated recurring tasks (managed via Claude Code scheduled tasks MCP):
+
+| Task | Schedule | Purpose |
+|---|---|---|
+| `weekly-client-review` | Mon 8:30 AM | Runs `/sf-playbook weekly-review` for all active clients |
+| `org-health-checks` | Fri 4:00 PM | Runs `/sf-health-check` per connected org |
+| `engagement-retro-reminder` | Last Fri of month | Runs `/retro` on month's git history |
+
+See `.claude/scheduled-tasks/README.md` for details and management commands.
 
 ---
 
@@ -111,7 +186,7 @@ Defined in `.claude/settings.json`. Run automatically on file edits.
 |---|---|---|
 | **Apex advisory** | PreToolUse (Edit/Write `.cls`/`.trigger`) | Reminds: bulkification, trigger-handler, USER_MODE, 4-space indent |
 | **Production deploy blocker** | PreToolUse (Bash `sf deploy`) | Hard-blocks deploy to production orgs. Queries `sf org display` to check |
-| **Apex anti-pattern detection** | PostToolUse (Write/Edit `.cls`/`.trigger`) | DML-in-loop (including for-each), `without sharing`, hardcoded IDs, empty catch blocks, dynamic SOQL concatenation, fat triggers |
+| **Apex anti-pattern detection** | PostToolUse (Write/Edit `.cls`/`.trigger`) | DML-in-loop, `without sharing`, hardcoded IDs, empty catch blocks, fat triggers |
 | **LWC + Flow validation** | PostToolUse (Write/Edit `.html`/`.flow-meta.xml`) | Legacy `if:true`/`if:false`, ternary operators in templates, Flow naming convention |
 
 ---
@@ -129,11 +204,6 @@ Query Salesforce documentation directly from Claude Code via [Context7](https://
 | `/salesforcecli/cli` | 577 | SF CLI command reference |
 | `/websites/architect_salesforce_well-architected` | 10 | Architecture principles, security patterns |
 | `/google/flow-lens` | 40 | Flow XML to UML/Mermaid diagram conversion |
-
-**Example query in Claude Code:**
-> "What are the governor limits for SOQL queries in a single transaction?"
-
-Claude will query Context7 automatically when the workspace is loaded.
 
 ---
 
@@ -166,19 +236,32 @@ salesforce-claude-workspace/
 │   ├── rules/
 │   │   ├── consulting-governance.md   # Production safety, challenge-first, client isolation
 │   │   └── sf-skills-audit.md         # Jaganpro/sf-skills compatibility notes
-│   └── skills/                  # 24 skills
+│   ├── agents/
+│   │   └── consulting/          # 17 specialized consulting subagents
+│   ├── playbooks/               # 8 orchestrated consulting workflows
+│   ├── scheduled-tasks/         # Scheduled task configs and README
+│   └── skills/                  # 37 skills
 │       ├── sf-org-setup/        ├── sf-sales/
 │       ├── sf-new-project/      ├── sf-service/
-│       ├── sf-test-gen/         ├── sf-data-cloud/
-│       ├── sf-validation/       ├── sf-agentforce/
-│       ├── sf-custom-metadata/  ├── sf-commerce/
-│       ├── sf-integration/      ├── sf-cpq/
-│       ├── sf-flow/             ├── sf-omnistudio/
-│       ├── sf-layout/           ├── sf-deploy/
-│       ├── sf-security/         ├── sf-org-analyze/
-│       ├── sf-report/           ├── sf-migration/
-│       ├── sf-experience/       ├── sf-debug/
-│       ├── sf-decide/           └── sf-handoff/
+│       ├── sf-component/        ├── sf-data-cloud/
+│       ├── sf-test-gen/         ├── sf-agentforce/
+│       ├── sf-validation/       ├── sf-commerce/
+│       ├── sf-custom-metadata/  ├── sf-cpq/
+│       ├── sf-integration/      ├── sf-omnistudio/
+│       ├── sf-flow/             ├── sf-deploy/
+│       ├── sf-layout/           ├── sf-org-analyze/
+│       ├── sf-security/         ├── sf-migration/
+│       ├── sf-report/           ├── sf-debug/
+│       ├── sf-experience/       ├── sf-health-check/
+│       ├── sf-decide/           ├── sf-release-notes/
+│       ├── sf-handoff/          ├── sf-demo-script/
+│       ├── sf-discovery/        ├── sf-client-switch/
+│       ├── sf-gap-analysis/     ├── sf-cert-prep/
+│       ├── sf-data-model/       ├── sf-sow-builder/
+│       ├── sf-automation-map/   ├── sf-status-update/
+│       ├── sf-solution-design/  ├── sf-change-request/
+│       ├── sf-compliance-check/ ├── sf-playbook/
+│       ├── sf-estimate/         └── sf-user-story/
 ├── .gitignore
 ├── LICENSE                      # MIT
 └── README.md
