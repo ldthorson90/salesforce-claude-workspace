@@ -1,0 +1,81 @@
+name: weekly-review
+description: Multi-client weekly status review with per-client reports and aggregated summary.
+version: "1.0.0"
+
+inputs:
+  clients:
+    type: list
+    description: List of active client names with their project directories
+    required: true
+    prompt: "List active clients (comma-separated name:path pairs)?"
+  week_ending:
+    type: string
+    description: Week ending date (YYYY-MM-DD)
+    required: false
+    prompt: "Week ending date (blank for current week)?"
+
+steps:
+  - id: step-01-collect
+    name: Status Collection
+    description: Collect raw status data from git history for each client project.
+    agent: status-reporter
+    inputs:
+      clients: playbook.inputs.clients
+      week_ending: playbook.inputs.week_ending
+    outputs:
+      raw_statuses:
+        type: list
+        description: Per-client raw status data from git log and project state
+    on_failure: retry
+
+  - id: step-02-report
+    name: Client Status Reports
+    description: Generate business-language status reports for each client.
+    agent: status-reporter
+    inputs:
+      raw_statuses: steps.step-01-collect.outputs.raw_statuses
+      clients: playbook.inputs.clients
+    outputs:
+      client_reports:
+        type: list
+        description: Per-client formatted status reports
+    on_failure: retry
+
+  - id: step-03-health
+    name: Health Checks
+    description: Run health checks on each client engagement (risk patterns, timeline, budget).
+    agent: skill
+    skill: project-health
+    inputs:
+      clients: playbook.inputs.clients
+    outputs:
+      health_reports:
+        type: list
+        description: Per-client health scores and risk flags
+    on_failure: skip
+
+  - id: step-04-aggregate
+    name: Weekly Summary
+    description: Aggregate all client reports into a single weekly summary and save to Obsidian.
+    agent: skill
+    skill: obsidian-note
+    inputs:
+      client_reports: steps.step-02-report.outputs.client_reports
+      health_reports: steps.step-03-health.outputs.health_reports
+      week_ending: playbook.inputs.week_ending
+    outputs:
+      weekly_summary:
+        type: file
+        description: Aggregated weekly summary note in Obsidian vault
+    checkpoint: true
+    on_failure: halt
+
+outputs:
+  client_reports:
+    type: list
+    description: Per-client status reports
+    source_step: step-02-report
+  weekly_summary:
+    type: file
+    description: Aggregated weekly summary
+    source_step: step-04-aggregate
