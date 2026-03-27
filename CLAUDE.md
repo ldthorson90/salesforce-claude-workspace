@@ -95,13 +95,40 @@ This workspace is used for:
 - **`/sf-compliance-check <org-alias|source-path>`** — Pre-delivery quality gate (code, architecture, docs)
 - **`/sf-estimate <requirements-file>`** — Complexity-based scope estimation (sessions, not hours)
 - **`/sf-user-story <input-file>`** — Convert notes/transcripts to formal user stories
+- **`/sf-sow-builder`** — Generate SOW from requirements + estimates (overview, scope, phases, RACI, change mgmt)
+- **`/sf-status-update`** — Client-facing status report from git history (business language, no jargon)
+- **`/sf-change-request`** — Scope change impact analysis with effort delta and recommendation
 
 ### Workflow Orchestration
 - **`/sf-playbook <playbook-name>`** — Run orchestrated consulting playbooks with gates and checkpoints
 
+### Playbooks
+- **`/sf-playbook discovery`** — Client discovery: intake interview, org analysis, gap analysis, requirements, estimation
+- **`/sf-playbook design`** — Solution design: data model, automation map, integration, security, assembly
+- **`/sf-playbook build`** — Implementation sprint: scaffold, TDD tests, implement, compliance, deploy
+- **`/sf-playbook deliver`** — Handoff & go-live: compliance gate, deliverables, training, knowledge capture
+- **`/sf-playbook investigate`** — Issue investigation: symptoms, diagnosis, impact, solution, change request
+- **`/sf-playbook enhance`** — Enhancement request: intake, impact, design delta, estimate, build handoff
+- **`/sf-playbook weekly-review`** — Multi-client weekly status: per-client reports, health checks, Obsidian summary
+
 ### Architecture & Delivery
 - **`/sf-decide`** — Route architecture questions to the right decision guide (8 frameworks)
 - **`/sf-handoff design-doc|admin-guide|deploy-runbook`** — Client deliverables for project close
+
+## Agent Library
+
+17 specialized consulting subagents in `.claude/agents/consulting/`, orchestrated by
+`orchestrator.md` and invoked from playbooks.
+
+| Category | Agents |
+|----------|--------|
+| Discovery & Requirements | `discovery-intake`, `gap-analyst`, `requirements-writer`, `stakeholder-mapper` |
+| Design | `data-modeler`, `automation-mapper`, `security-designer`, `integration-architect` |
+| Delivery | `scope-estimator`, `sow-builder`, `status-reporter`, `demo-scripter`, `change-request-analyst` |
+| Investigation | `issue-diagnostician`, `impact-analyzer` |
+| Knowledge | `release-notes-analyst`, `cert-prep-coach` |
+
+Agent contracts are defined in `.claude/agents/consulting/agent-contract.yaml`.
 
 ## MCP Servers
 

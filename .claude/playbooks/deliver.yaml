@@ -1,0 +1,130 @@
+name: deliver
+description: Handoff and go-live workflow with quality gate, deliverables, training, and knowledge capture.
+version: "1.0.0"
+
+inputs:
+  project_path:
+    type: file-path
+    description: Path to the SFDX project directory
+    required: true
+    prompt: "Path to SFDX project?"
+  org_alias:
+    type: org-alias
+    description: Target org alias for final validation
+    required: true
+    prompt: "Target org alias?"
+  client_name:
+    type: string
+    description: Client name for deliverable naming
+    required: true
+    prompt: "Client name?"
+
+steps:
+  - id: step-01-compliance
+    name: Final Compliance Gate
+    description: Run final compliance check before handoff.
+    agent: skill
+    skill: sf-compliance-check
+    inputs:
+      project_path: playbook.inputs.project_path
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      compliance_report:
+        type: file
+        description: Final compliance report
+    gate: code-analyzer-clean
+    on_failure: halt
+
+  - id: step-02-deliverables
+    name: Generate Deliverables
+    description: Generate all handoff deliverables (design doc, admin guide, deploy runbook, data dictionary).
+    agent: skill
+    skill: sf-handoff
+    inputs:
+      project_path: playbook.inputs.project_path
+      client_name: playbook.inputs.client_name
+    outputs:
+      design_doc:
+        type: file
+        description: Solution design document
+      admin_guide:
+        type: file
+        description: Administrator guide
+      deploy_runbook:
+        type: file
+        description: Deployment runbook for production
+      data_dictionary:
+        type: file
+        description: Data dictionary with all custom objects and fields
+    gate: all-deliverables-generated
+    on_failure: retry
+
+  - id: step-03-training
+    name: Demo & Training Scripts
+    description: Generate persona-based demo walkthroughs and training materials.
+    agent: demo-scripter
+    inputs:
+      project_path: playbook.inputs.project_path
+      client_name: playbook.inputs.client_name
+    outputs:
+      demo_script:
+        type: file
+        description: Demo walkthrough script with personas and scenarios
+    on_failure: skip
+
+  - id: step-04-go-live-gate
+    name: Go-Live Approval
+    description: Present all deliverables for go-live approval.
+    agent: user
+    inputs:
+      compliance_report: steps.step-01-compliance.outputs.compliance_report
+      design_doc: steps.step-02-deliverables.outputs.design_doc
+      admin_guide: steps.step-02-deliverables.outputs.admin_guide
+      deploy_runbook: steps.step-02-deliverables.outputs.deploy_runbook
+    outputs:
+      approved:
+        type: boolean
+        description: Go-live approved
+    gate: client-approved
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-05-knowledge-capture
+    name: Knowledge Capture
+    description: Save engagement learnings and patterns to Obsidian vault.
+    agent: skill
+    skill: obsidian-note
+    inputs:
+      client_name: playbook.inputs.client_name
+      project_path: playbook.inputs.project_path
+    outputs:
+      knowledge_note:
+        type: file
+        description: Engagement retrospective note in Obsidian
+    on_failure: skip
+
+outputs:
+  compliance_report:
+    type: file
+    description: Final compliance report
+    source_step: step-01-compliance
+  design_doc:
+    type: file
+    description: Solution design document
+    source_step: step-02-deliverables
+  admin_guide:
+    type: file
+    description: Administrator guide
+    source_step: step-02-deliverables
+  deploy_runbook:
+    type: file
+    description: Deployment runbook
+    source_step: step-02-deliverables
+  data_dictionary:
+    type: file
+    description: Data dictionary
+    source_step: step-02-deliverables
+  demo_script:
+    type: file
+    description: Demo walkthrough script
+    source_step: step-03-training

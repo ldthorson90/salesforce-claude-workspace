@@ -1,0 +1,106 @@
+name: investigate
+description: Issue investigation workflow for diagnosing and resolving Salesforce production issues.
+version: "1.0.0"
+
+inputs:
+  symptom_description:
+    type: string
+    description: Description of the issue or symptom being investigated
+    required: true
+    prompt: "Describe the issue or symptom?"
+  org_alias:
+    type: org-alias
+    description: Salesforce org alias where the issue occurs
+    required: true
+    prompt: "Org alias?"
+  severity:
+    type: string
+    description: "Issue severity: critical, high, medium, low"
+    required: false
+    default: medium
+    prompt: "Severity level?"
+
+steps:
+  - id: step-01-symptoms
+    name: Symptom Collection
+    description: Gather detailed symptom information, error messages, and reproduction steps.
+    agent: user
+    inputs:
+      symptom_description: playbook.inputs.symptom_description
+    outputs:
+      symptom_report:
+        type: file
+        description: Detailed symptom report with error messages, affected users, and timeline
+    on_failure: halt
+
+  - id: step-02-diagnosis
+    name: Issue Diagnosis
+    description: Trace symptoms through debug logs, governor limits, and automation chains.
+    agent: issue-diagnostician
+    inputs:
+      symptom_report: steps.step-01-symptoms.outputs.symptom_report
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      diagnostic_findings:
+        type: file
+        description: Diagnostic findings with root cause hypotheses ranked by likelihood
+    gate: at-least-one-hypothesis
+    on_failure: retry
+
+  - id: step-03-impact
+    name: Impact Analysis
+    description: Map blast radius of the issue across data model, automation, and integrations.
+    agent: impact-analyzer
+    inputs:
+      diagnostic_findings: steps.step-02-diagnosis.outputs.diagnostic_findings
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      impact_assessment:
+        type: file
+        description: Impact assessment with affected components and downstream effects
+    on_failure: retry
+
+  - id: step-04-solution
+    name: Solution Proposal
+    description: Propose fix with implementation steps and risk assessment.
+    agent: user
+    inputs:
+      diagnostic_findings: steps.step-02-diagnosis.outputs.diagnostic_findings
+      impact_assessment: steps.step-03-impact.outputs.impact_assessment
+    outputs:
+      proposed_fix:
+        type: file
+        description: Proposed solution with implementation steps and rollback plan
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-05-change-request
+    name: Change Request
+    description: Document scope change if fix requires work beyond original engagement.
+    agent: change-request-analyst
+    inputs:
+      proposed_fix: steps.step-04-solution.outputs.proposed_fix
+      impact_assessment: steps.step-03-impact.outputs.impact_assessment
+    outputs:
+      change_request:
+        type: file
+        description: Formal change request with effort estimate and recommendation
+    on_failure: skip
+
+outputs:
+  diagnostic_findings:
+    type: file
+    description: Root cause analysis
+    source_step: step-02-diagnosis
+  impact_assessment:
+    type: file
+    description: Impact assessment
+    source_step: step-03-impact
+  proposed_fix:
+    type: file
+    description: Proposed solution
+    source_step: step-04-solution
+  change_request:
+    type: file
+    description: Change request (if applicable)
+    source_step: step-05-change-request

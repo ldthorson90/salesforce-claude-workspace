@@ -1,0 +1,121 @@
+name: build
+description: Implementation sprint workflow with TDD, code analysis, and deployment.
+version: "1.0.0"
+
+inputs:
+  solution_design:
+    type: file-path
+    description: Path to approved solution design document
+    required: true
+    prompt: "Path to solution design document?"
+  org_alias:
+    type: org-alias
+    description: Target sandbox org alias for deployment
+    required: true
+    prompt: "Target sandbox org alias?"
+  project_name:
+    type: string
+    description: SFDX project name
+    required: true
+    prompt: "SFDX project name?"
+
+steps:
+  - id: step-01-scaffold
+    name: Project Scaffolding
+    description: Create SFDX project structure and connect to target org.
+    agent: skill
+    skill: sf-new-project
+    inputs:
+      project_name: playbook.inputs.project_name
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      project_path:
+        type: string
+        description: Path to the scaffolded SFDX project
+    gate: org-connected
+    on_failure: halt
+
+  - id: step-02-test-write
+    name: Write Tests
+    description: Generate test classes for all features before implementation (TDD).
+    agent: skill
+    skill: sf-test-gen
+    inputs:
+      solution_design: playbook.inputs.solution_design
+      project_path: steps.step-01-scaffold.outputs.project_path
+    outputs:
+      test_classes:
+        type: list
+        description: List of generated test class file paths
+    gate: tests-compile
+    on_failure: retry
+
+  - id: step-03-implement
+    name: Implement Features
+    description: Implement solution features to pass committed tests.
+    agent: skill
+    skill: sf-solution-design
+    inputs:
+      solution_design: playbook.inputs.solution_design
+      test_classes: steps.step-02-test-write.outputs.test_classes
+      project_path: steps.step-01-scaffold.outputs.project_path
+    outputs:
+      implementation:
+        type: list
+        description: List of implemented component file paths
+    gate: tests-passing
+    on_failure: retry
+
+  - id: step-04-compliance
+    name: Compliance Check
+    description: Run Code Analyzer and validate against consulting standards.
+    agent: skill
+    skill: sf-compliance-check
+    inputs:
+      project_path: steps.step-01-scaffold.outputs.project_path
+    outputs:
+      compliance_report:
+        type: file
+        description: Compliance report with findings and recommendations
+    gate: code-analyzer-clean
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-05-deploy
+    name: Deploy to Sandbox
+    description: Deploy validated source to target sandbox org.
+    agent: skill
+    skill: sf-deploy
+    inputs:
+      org_alias: playbook.inputs.org_alias
+      project_path: steps.step-01-scaffold.outputs.project_path
+    outputs:
+      deployment_report:
+        type: file
+        description: Deployment results with test execution summary
+    gate: tests-passing
+    on_failure: retry
+
+  - id: step-06-validate
+    name: Post-Deploy Validation
+    description: Validate deployment succeeded and all tests pass in org.
+    agent: user
+    inputs:
+      deployment_report: steps.step-05-deploy.outputs.deployment_report
+    outputs:
+      validated:
+        type: boolean
+        description: Whether deployment is validated and accepted
+    gate: user-confirmed
+    checkpoint: true
+    on_failure: halt
+
+outputs:
+  compliance_report:
+    type: file
+    description: Code compliance report
+    source_step: step-04-compliance
+  deployment_report:
+    type: file
+    description: Deployment and test execution report
+    source_step: step-05-deploy

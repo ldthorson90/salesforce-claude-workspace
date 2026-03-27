@@ -1,0 +1,129 @@
+name: design
+description: Solution design workflow producing data model, automation map, integration design, and security model.
+version: "1.0.0"
+
+inputs:
+  requirements:
+    type: file-path
+    description: Path to requirements document (from discovery playbook or standalone)
+    required: true
+    prompt: "Path to requirements document?"
+  org_analysis:
+    type: file-path
+    description: Path to org analysis report (optional)
+    required: false
+    prompt: "Path to org analysis (blank to skip)?"
+  client_name:
+    type: string
+    description: Client name for output file naming
+    required: true
+    prompt: "Client name?"
+
+steps:
+  - id: step-01-data-model
+    name: Data Model Design
+    description: Design Salesforce data model with objects, fields, relationships, and ERD.
+    agent: data-modeler
+    inputs:
+      requirements: playbook.inputs.requirements
+      org_analysis: playbook.inputs.org_analysis
+    outputs:
+      data_model:
+        type: file
+        description: Data model specification with objects, fields, and relationships
+      erd:
+        type: file
+        description: Entity-Relationship Diagram in Mermaid format
+    gate: all-entities-mapped
+    on_failure: retry
+
+  - id: step-02-automation
+    name: Automation Mapping
+    description: Map business processes to Salesforce automation tools with decision rationale.
+    agent: automation-mapper
+    inputs:
+      requirements: playbook.inputs.requirements
+      data_model: steps.step-01-data-model.outputs.data_model
+    outputs:
+      automation_map:
+        type: file
+        description: Process-to-automation mapping with tool selection rationale
+    gate: all-processes-mapped
+    checkpoint: true
+    on_failure: retry
+
+  - id: step-03-integration
+    name: Integration Design
+    description: Design integration patterns for external system connectivity.
+    agent: integration-architect
+    inputs:
+      requirements: playbook.inputs.requirements
+      data_model: steps.step-01-data-model.outputs.data_model
+    outputs:
+      integration_design:
+        type: file
+        description: Integration design with patterns, middleware, and data flow
+    gate: all-integrations-have-patterns
+    on_failure: retry
+
+  - id: step-04-security
+    name: Security Model Design
+    description: Design OWD, sharing rules, profiles, permission sets, and FLS.
+    agent: security-designer
+    inputs:
+      data_model: steps.step-01-data-model.outputs.data_model
+      requirements: playbook.inputs.requirements
+    outputs:
+      security_model:
+        type: file
+        description: Security model with OWD, sharing, profiles, and FLS matrix
+    gate: all-objects-have-sharing-model
+    on_failure: retry
+
+  - id: step-05-assemble
+    name: Solution Design Assembly
+    description: Assemble all design outputs into a complete solution design document.
+    agent: skill
+    skill: sf-solution-design
+    inputs:
+      data_model: steps.step-01-data-model.outputs.data_model
+      erd: steps.step-01-data-model.outputs.erd
+      automation_map: steps.step-02-automation.outputs.automation_map
+      integration_design: steps.step-03-integration.outputs.integration_design
+      security_model: steps.step-04-security.outputs.security_model
+      client_name: playbook.inputs.client_name
+    outputs:
+      solution_design:
+        type: file
+        description: Complete solution design document
+      solution_docx:
+        type: file
+        description: Solution design as Word document
+    checkpoint: true
+    on_failure: halt
+
+outputs:
+  solution_design:
+    type: file
+    description: Complete solution design document
+    source_step: step-05-assemble
+  data_model:
+    type: file
+    description: Data model specification
+    source_step: step-01-data-model
+  erd:
+    type: file
+    description: Entity-Relationship Diagram
+    source_step: step-01-data-model
+  automation_map:
+    type: file
+    description: Automation mapping
+    source_step: step-02-automation
+  integration_design:
+    type: file
+    description: Integration design
+    source_step: step-03-integration
+  security_model:
+    type: file
+    description: Security model
+    source_step: step-04-security

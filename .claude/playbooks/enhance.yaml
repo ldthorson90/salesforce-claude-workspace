@@ -1,0 +1,103 @@
+name: enhance
+description: Enhancement request workflow for scoping and planning new feature additions.
+version: "1.0.0"
+
+inputs:
+  enhancement_description:
+    type: string
+    description: Description of the requested enhancement
+    required: true
+    prompt: "Describe the enhancement request?"
+  org_alias:
+    type: org-alias
+    description: Salesforce org alias
+    required: false
+    prompt: "Org alias (blank to skip)?"
+  original_sow:
+    type: file-path
+    description: Path to original SOW or scope document
+    required: false
+    prompt: "Path to original SOW (blank if none)?"
+
+steps:
+  - id: step-01-intake
+    name: Enhancement Intake
+    description: Gather detailed enhancement requirements and business justification.
+    agent: user
+    inputs:
+      enhancement_description: playbook.inputs.enhancement_description
+    outputs:
+      enhancement_request:
+        type: file
+        description: Structured enhancement request with business justification and acceptance criteria
+    on_failure: halt
+
+  - id: step-02-impact
+    name: Impact Analysis
+    description: Analyze impact of enhancement across data model, automation, and integrations.
+    agent: impact-analyzer
+    inputs:
+      enhancement_request: steps.step-01-intake.outputs.enhancement_request
+      org_alias: playbook.inputs.org_alias
+    outputs:
+      impact_analysis:
+        type: file
+        description: Impact analysis with affected components and dependency map
+    gate: all-dependencies-mapped
+    on_failure: retry
+
+  - id: step-03-design-delta
+    name: Design Amendment
+    description: Produce design changes needed to accommodate the enhancement.
+    agent: user
+    inputs:
+      enhancement_request: steps.step-01-intake.outputs.enhancement_request
+      impact_analysis: steps.step-02-impact.outputs.impact_analysis
+    outputs:
+      design_delta:
+        type: file
+        description: Design amendment documenting changes to data model, automation, and UI
+    checkpoint: true
+    on_failure: halt
+
+  - id: step-04-estimate
+    name: Scope Delta Estimation
+    description: Estimate additional effort for the enhancement.
+    agent: scope-estimator
+    inputs:
+      design_delta: steps.step-03-design-delta.outputs.design_delta
+    outputs:
+      scope_delta:
+        type: file
+        description: Effort delta estimate with complexity ratings
+    checkpoint: true
+    gate: user-confirmed
+    on_failure: halt
+
+  - id: step-05-chain-to-build
+    name: Build Handoff
+    description: If approved, prepare inputs for the build playbook.
+    agent: user
+    inputs:
+      design_delta: steps.step-03-design-delta.outputs.design_delta
+      scope_delta: steps.step-04-estimate.outputs.scope_delta
+    outputs:
+      approved:
+        type: boolean
+        description: Whether the enhancement is approved for implementation
+    gate: client-approved
+    on_failure: halt
+
+outputs:
+  impact_analysis:
+    type: file
+    description: Impact analysis
+    source_step: step-02-impact
+  design_delta:
+    type: file
+    description: Design amendment
+    source_step: step-03-design-delta
+  scope_delta:
+    type: file
+    description: Effort delta estimate
+    source_step: step-04-estimate
