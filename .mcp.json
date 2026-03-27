@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "mermaid": {
+      "command": "npx",
+      "args": ["-y", "mcp-mermaid"]
+    },
+    "sf-advanced": {
+      "command": "npx",
+      "args": ["@advanced-communities/salesforce-mcp-server"],
+      "env": {
+        "READ_ONLY": "true"
+      }
+    },
+    "sf-tsmz": {
+      "command": "npx",
+      "args": ["-y", "@tsmztech/mcp-server-salesforce"],
+      "env": {
+        "SALESFORCE_CONNECTION_TYPE": "Salesforce_CLI"
+      }
+    }
+  }
+}

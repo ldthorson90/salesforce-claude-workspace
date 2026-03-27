@@ -1,0 +1,25 @@
+# Local Claude Code config (user-specific)
+.claude/settings.local.json
+
+# Source materials (not redistributable)
+compass_artifact_*.md
+salesforce-architect-decision-guides/
+
+# Salesforce project artifacts
+.sfdx/
+.sf/
+.env
+.env.*
+node_modules/
+*.log
+deploy-results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

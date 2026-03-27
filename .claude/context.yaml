@@ -1,0 +1,101 @@
+# Salesforce Workspace Context
+# Authoritative source for workspace metadata — read at session start
+
+workspace:
+  name: Salesforce Workspace
+  type: multi-project  # Not a single repo; contains multiple SFDX projects
+  purpose: Salesforce development, architecture, and consulting
+  owner: ""  # Set to your name or team
+
+toolchain:
+  cli: sf  # Salesforce CLI (installed via npm)
+  node: "24.x"  # via nvm
+  java: "11+"  # Required for Apex compilation and Code Analyzer
+  mcp_primary: "@salesforce/mcp"  # Official Salesforce DX MCP Server
+
+reference_materials:
+  architect_decision_guides:
+    path: salesforce-architect-decision-guides/
+    topics:
+      - record-triggered-automation
+      - data-360-provisioning
+      - data-360-interoperability
+      - step-based-async-framework
+      - asynchronous-processing
+      - building-forms
+      - event-driven-architecture
+      - data-integration
+  research:
+    path: compass_artifact_*.md
+    content: Claude ecosystem tools for Salesforce professionals
+  context7_libraries:  # Queryable via mcp__context7__query-docs
+    salesforce_docs:
+      id: "/damecek/salesforce-documentation-context"
+      snippets: 44802
+      use: "Full SF docs — Apex, SOQL, governors, metadata, admin reference"
+    apex_recipes:
+      id: "/trailheadapps/apex-recipes"
+      snippets: 457
+      use: "TriggerHandler framework, best practice Apex patterns"
+    slds:
+      id: "/websites/v1_lightningdesignsystem"
+      snippets: 10639
+      use: "SLDS components, form layouts, utility classes"
+    well_architected:
+      id: "/websites/architect_salesforce_well-architected"
+      snippets: 10
+      use: "Architecture principles, security patterns"
+    sf_cli:
+      id: "/salesforcecli/cli"
+      snippets: 577
+      use: "SF CLI command reference"
+    soql_lib:
+      id: "/beyond-the-cloud-dev/soql-lib"
+      snippets: 874
+      use: "Fluent SOQL builder patterns in Apex"
+    flow_lens:
+      id: "/google/flow-lens"
+      snippets: 40
+      use: "Flow XML to UML/Mermaid diagram conversion"
+
+mcp_servers:
+  salesforce_dx:
+    install: "npx -y @salesforce/mcp --orgs <ORG_ALIAS> --toolsets all"
+    auth: "sf org login web -a <ALIAS>"
+    toolsets:
+      - org_management
+      - soql
+      - metadata
+      - lwc
+      - code_analysis
+      - apex_testing
+      - aura_migration
+      - devops_center
+      - user_permissions
+      - performance
+      - mobile
+  community_servers:
+    advanced_communities: "npx @advanced-communities/salesforce-mcp-server"
+    tsmztech: "npx -y @tsmztech/mcp-server-salesforce"
+    sf_mcp: "npx -y codefriar/sf-mcp /path/to/project"
+  skill_frameworks:
+    sf_skills: "npx skills add Jaganpro/sf-skills"  # 25 skills, 420+ validation points
+    salesforce_claude_framework: "ehebert7/salesforce-claude-framework"
+    claude_sf_skills: "david-sfdev/claude-sf-skills"
+
+conventions:
+  apex:
+    indent: 4
+    brace_style: kr
+    patterns: [trigger-handler, service-class, selector-class]
+    crud_fls: USER_MODE
+    test_coverage_target: "85%+"
+  lwc:
+    indent: 2
+    conditionals: "lwc:if (not if:true)"
+    data_access: wire-service-preferred
+    styling: slds-utility-classes
+  flows:
+    naming: "<Object>_<Action>_<Context>"
+    type: record-triggered-preferred
+    error_handling: fault-paths-required

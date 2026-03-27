@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sf *)",
+      "Bash(npx -y @salesforce/mcp*)",
+      "Bash(npx @advanced-communities/salesforce-mcp-server*)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(java -version)",
+      "Bash(git *)",
+      "Bash(python3 *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "filepath=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('file_path',''))\" 2>/dev/null); case \"$filepath\" in *.cls|*.trigger) echo 'Apex file: enforce bulkification, trigger-handler pattern, USER_MODE for CRUD/FLS, 4-space indent.' >&2;; *.js) dir=$(dirname \"$filepath\"); if [ -f \"$dir\"/*.html ] 2>/dev/null && [ -f \"$dir\"/*.js-meta.xml ] 2>/dev/null; then echo 'LWC component: use lwc:if (not if:true), wire service preferred, 2-space indent, no ternary in templates.' >&2; fi;; *.html) dir=$(dirname \"$filepath\"); if [ -f \"$dir\"/*.js-meta.xml ] 2>/dev/null; then echo 'LWC template: use lwc:if/lwc:elseif/lwc:else, no ternary operators, SLDS utility classes.' >&2; fi;; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('command',''))\" 2>/dev/null); case \"$cmd\" in *'sf project deploy'*|*'sf metadata deploy'*|*'sf deploy'*) org=$(echo \"$cmd\" | grep -oP '(?<=-o\\s|--target-org\\s)\\S+' 2>/dev/null); if [ -n \"$org\" ]; then orginfo=$(sf org display -o \"$org\" --json 2>/dev/null); is_sandbox=$(echo \"$orginfo\" | python3 -c \"import sys,json; r=json.load(sys.stdin).get('result',{}); print(r.get('isSandbox',False) or r.get('isScratch',False))\" 2>/dev/null); if [ \"$is_sandbox\" = \"False\" ]; then echo 'BLOCKED: Production org detected. Per consulting governance, AI-generated code must not deploy to production. Deploy to a sandbox first.' >&2; exit 2; fi; fi;; esac",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "filepath=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('file_path',''))\" 2>/dev/null); case \"$filepath\" in *.cls|*.trigger) if grep -qPz 'for\\s*\\([^)]*\\)\\s*\\{[^}]*(update |insert |delete |upsert |undelete |Database\\.\\w+\\()' \"$filepath\" 2>/dev/null; then echo 'WARNING: Possible SOQL/DML inside loop detected. Bulkify this code.' >&2; fi; if grep -q 'without sharing' \"$filepath\" 2>/dev/null; then echo 'WARNING: \"without sharing\" detected. Confirm this is intentional and document the reason.' >&2; fi; if grep -qP \"'(?=[a-zA-Z0-9]*[0-9])[a-zA-Z0-9]{15}'|'(?=[a-zA-Z0-9]*[0-9])[a-zA-Z0-9]{18}'\" \"$filepath\" 2>/dev/null; then echo 'WARNING: Possible hardcoded Salesforce ID detected. Use Custom Metadata or Custom Labels instead.' >&2; fi; if grep -qPz 'catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}' \"$filepath\" 2>/dev/null; then echo 'WARNING: Empty catch block detected. Log the exception or handle it explicitly.' >&2; fi; if grep -P \"'[^']*'\\s*\\+|\\+\\s*'[^']*'\" \"$filepath\" 2>/dev/null | grep -qP 'SELECT|Database\\.query'; then echo 'WARNING: Possible dynamic SOQL with string concatenation. Use bind variables instead.' >&2; fi; case \"$filepath\" in *.trigger) logiclines=$(grep -cP '^\\s*(if|for|while|switch|insert |update |delete |upsert |Database\\.)' \"$filepath\" 2>/dev/null | head -1); logiclines=${logiclines:-0}; [ \"$logiclines\" -ge 3 ] && echo 'WARNING: Business logic detected in trigger body. Use a trigger handler class instead.' >&2;; esac;; esac",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "filepath=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('file_path',''))\" 2>/dev/null); case \"$filepath\" in */lwc/*.html) if grep -qP 'if:true=|if:false=' \"$filepath\" 2>/dev/null; then echo 'WARNING: Legacy if:true/if:false detected in LWC template. Use lwc:if/lwc:elseif/lwc:else instead.' >&2; fi; if grep -qP '\\?.*:' \"$filepath\" 2>/dev/null && grep -qP 'template' \"$filepath\" 2>/dev/null; then echo 'WARNING: Possible ternary operator in LWC template. Ternary operators are not supported in LWC templates.' >&2; fi;; *.flow-meta.xml) basename=$(basename \"$filepath\" .flow-meta.xml); if ! echo \"$basename\" | grep -qP '^[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*_[A-Z][a-zA-Z0-9]*$'; then echo \"WARNING: Flow name '$basename' does not follow convention: <Object>_<Action>_<Context>.\" >&2; fi;; esac",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
