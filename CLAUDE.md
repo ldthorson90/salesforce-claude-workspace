@@ -54,6 +54,7 @@ This workspace is used for:
 ## Skills
 
 ### Setup & Scaffolding
+- **`/sf-workspace-setup`** — Verify and configure the workspace: prerequisites, MCPs, Obsidian vault, git hooks
 - **`/sf-org-setup <ORG_ALIAS>`** — Connect org, configure DX MCP, production safety check
 - **`/sf-new-project <project-name>`** — Scaffold SFDX project with full config and .gitignore
 - **`/sf-component <type> <name>`** — (Global) Scaffold LWC, Apex trigger handlers, or service classes
@@ -83,7 +84,8 @@ This workspace is used for:
 - **`/sf-sales`** — Sales Cloud: opportunities, forecasting, territories, products, lead management
 - **`/sf-service`** — Service Cloud: case management, entitlements, knowledge, omnichannel
 - **`/sf-data-cloud`** — Data Cloud: connect, prepare, harmonize, segment, activate, calculated insights
-- **`/sf-agentforce`** — Agentforce: AI agents, prompt templates, actions, Trust Layer, testing
+- **`/sf-agentforce`** — Agentforce: AI agents, prompt templates, actions, Trust Layer, Models API, testing
+- **`/sf-dc-agentforce`** — Data Cloud → Agentforce pipeline: unified profile grounding, segment-gated agents, calculated insights, activation triggers, Trust Layer masking
 - **`/sf-commerce`** — B2C Commerce: storefront, catalog, checkout, SCAPI, cartridges, PWA Kit
 - **`/sf-cpq`** — CPQ: product rules, price rules, quote templates, approvals, guided selling
 - **`/sf-omnistudio`** — OmniStudio: OmniScripts, FlexCards, Integration Procedures, DataRaptors
