@@ -1,6 +1,9 @@
 # Local Claude Code config (user-specific)
 .claude/settings.local.json
 
+# Local eval harness (not for deployment or CI)
+.claude/evals/
+
 # Source materials (not redistributable)
 compass_artifact_*.md
 salesforce-architect-decision-guides/

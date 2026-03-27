@@ -1,37 +1,111 @@
 # Salesforce Claude Workspace
 
-**37 Claude Code skills, 7 consulting playbooks, 17 subagents, 3 MCP servers, and 4 validation hooks for independent Salesforce consultants.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
+**43 Claude Code skills, 7 consulting playbooks, 17 subagents, 3 MCP servers, and 4 validation hooks for independent Salesforce consultants.** Drop into any workspace and get production-grade Salesforce development, architecture, and delivery tooling.
 
 ---
 
-## Quick Start
+## Production Safety
+
+> **This workspace is built so that AI-generated code cannot reach a client's production org.**
+
+Three independent layers enforce this:
+
+| Layer | Where | What it does |
+|---|---|---|
+| **Org connection** | `/sf-org-setup` | Detects production orgs at auth time. Refuses to configure write-capable MCP tools. Only read-only access is permitted for production. |
+| **Deploy blocker** | `/sf-deploy` | Checks `isSandbox` and `isScratch` before every deploy. Hard stops if either is false. No override flag exists. |
+| **Bash hook** | `.claude/settings.json` | Intercepts `sf project deploy` shell commands. Queries `sf org display` live and blocks execution if the target is a production org. |
+
+**What this means in practice:**
+- You can authenticate against a client's production org for read-only analysis (org health checks, metadata review)
+- You cannot deploy metadata, run destructive operations, or execute DML against production — the workspace will refuse and explain why
+- Sandboxes and scratch orgs are unrestricted
+- If something looks wrong, run `sf org display -o <alias>` to verify what you're connected to
+
+---
+
+## New Client Engagement
+
+**How to start a new client in 5 minutes:**
+
+### Step 1 — Open the workspace in Claude Code
 
 ```bash
-# Clone into your working directory
+cd "/home/luke/Cowork Projects/Salesforce Workspace"
+claude
+```
+
+Or from Cowork: open a new Claude Code session and select this folder as the project root.
+
+### Step 2 — Scaffold a project for the client
+
+```
+/sf-new-project <client-name>
+```
+
+Examples: `/sf-new-project acme-manufacturing`, `/sf-new-project pinnacle-financial`
+
+This creates an isolated SFDX project directory for the client with its own CLAUDE.md, context.yaml, git repo, and .gitignore. **Each client lives in its own directory — nothing crosses over.**
+
+### Step 3 — Connect their sandbox (not production)
+
+```
+/sf-org-setup <client-name>-dev
+```
+
+This runs `sf org login web`, checks the org type, and configures the DX MCP server. If you accidentally point it at a production org, it will stop and tell you.
+
+Good alias conventions: `acme-dev`, `acme-qa`, `pinnacle-sandbox`
+
+### Step 4 — Run discovery or switch to an existing client
+
+**Starting a new engagement from scratch:**
+```
+/sf-playbook discovery
+```
+
+**Returning to an existing client:**
+```
+/sf-client-switch acme-manufacturing
+```
+
+This loads: org auth status, recent git activity, open Obsidian notes, active playbooks — all in under 5 seconds.
+
+### Step 5 — Build, test, deploy (to sandbox)
+
+```
+/sf-deploy acme-dev
+```
+
+The deploy skill runs Code Analyzer, executes tests, reports coverage, and tags the deployment in git. It will not deploy to production.
+
+---
+
+## Quick Start (First-Time Setup)
+
+```bash
+# Clone into your Cowork Projects folder
 git clone https://github.com/ldthorson90/salesforce-claude-workspace.git
 cd salesforce-claude-workspace
 
 # Open in Claude Code
 claude
+
+# Verify everything is configured correctly
+/sf-workspace-setup
 ```
 
-Claude Code automatically loads the skills, hooks, and MCP servers from `.claude/` and `.mcp.json`.
-
-**First steps inside Claude Code:**
-```
-/sf-org-setup my-sandbox        # Connect a Salesforce org
-/sf-new-project acme-billing    # Scaffold an SFDX project
-/sf-component lwc InvoiceTable  # Start building
-```
+`/sf-workspace-setup` checks: SF CLI, Node.js, Java, MCP server connectivity, Obsidian vault structure, and git hooks. Run it once when you first set up, and any time something feels off.
 
 ---
 
-## Skills (37)
+## Skills (43)
 
 ### Setup & Scaffolding
 
 | Skill | What it does |
 |---|---|
+| `/sf-workspace-setup` | Verify and configure the workspace: prerequisites, MCPs, Obsidian vault, git hooks |
 | `/sf-org-setup` | Connect a Salesforce org, configure DX MCP, block production deploys |
 | `/sf-new-project` | Scaffold SFDX project with CLAUDE.md, context.yaml, git, .gitignore |
 | `/sf-component` | Scaffold LWC components, Apex trigger handlers, service classes |
@@ -63,6 +137,7 @@ Claude Code automatically loads the skills, hooks, and MCP servers from `.claude
 | `/sf-service` | **Service Cloud Consultant** — case management, entitlements, knowledge, omnichannel |
 | `/sf-data-cloud` | **Data Cloud Consultant** — connect, prepare, harmonize, segment, activate |
 | `/sf-agentforce` | **AI Specialist** — agent builder, prompt templates, actions, Trust Layer, testing |
+| `/sf-dc-agentforce` | Data Cloud → Agentforce pipeline: unified profiles, segment-gated agents, calculated insights |
 | `/sf-commerce` | **B2C Commerce Architect** — storefront, catalog, checkout, SCAPI, PWA Kit |
 | `/sf-cpq` | **CPQ Specialist** — product rules, price rules, quote templates, approvals |
 | `/sf-omnistudio` | **OmniStudio Consultant** — OmniScripts, FlexCards, Integration Procedures |
@@ -154,6 +229,7 @@ Automated recurring tasks (managed via Claude Code scheduled tasks MCP):
 |---|---|---|
 | `weekly-client-review` | Mon 8:30 AM | Runs `/sf-playbook weekly-review` for all active clients |
 | `org-health-checks` | Fri 4:00 PM | Runs `/sf-health-check` per connected org |
+| `eval-regression-weekly` | Mon 9:00 AM | Runs full eval suite, flags regressions, updates BACKLOG |
 | `engagement-retro-reminder` | Last Fri of month | Runs `/retro` on month's git history |
 
 See `.claude/scheduled-tasks/README.md` for details and management commands.
@@ -240,11 +316,12 @@ salesforce-claude-workspace/
 │   │   └── consulting/          # 17 specialized consulting subagents
 │   ├── playbooks/               # 8 orchestrated consulting workflows
 │   ├── scheduled-tasks/         # Scheduled task configs and README
-│   └── skills/                  # 37 skills
-│       ├── sf-org-setup/        ├── sf-sales/
-│       ├── sf-new-project/      ├── sf-service/
-│       ├── sf-component/        ├── sf-data-cloud/
-│       ├── sf-test-gen/         ├── sf-agentforce/
+│   └── skills/                  # 43 skills
+│       ├── sf-workspace-setup/  ├── sf-sales/
+│       ├── sf-org-setup/        ├── sf-service/
+│       ├── sf-new-project/      ├── sf-data-cloud/
+│       ├── sf-component/        ├── sf-agentforce/
+│       ├── sf-test-gen/         ├── sf-dc-agentforce/
 │       ├── sf-validation/       ├── sf-commerce/
 │       ├── sf-custom-metadata/  ├── sf-cpq/
 │       ├── sf-integration/      ├── sf-omnistudio/

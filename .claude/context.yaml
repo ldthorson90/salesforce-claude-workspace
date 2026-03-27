@@ -83,6 +83,56 @@ mcp_servers:
     salesforce_claude_framework: "ehebert7/salesforce-claude-framework"
     claude_sf_skills: "david-sfdev/claude-sf-skills"
 
+release:
+  current: "1.3.0"  # release/v1.3.0
+  skills: 43        # ls .claude/skills/ | wc -l
+  playbooks: 8      # ls .claude/playbooks/*.yaml | wc -l
+  agents: 17        # ls .claude/agents/consulting/*.md | wc -l (excluding orchestrator)
+  scheduled_tasks: 3  # weekly-client-review, org-health-checks, engagement-retro-reminder
+
+skills:
+  path: .claude/skills/
+  # Grouped by category for quick navigation
+  setup: [sf-workspace-setup, sf-org-setup, sf-new-project]
+  development_code: [sf-test-gen, sf-validation, sf-custom-metadata, sf-integration, sf-component]
+  development_declarative: [sf-flow, sf-layout, sf-security, sf-report, sf-experience]
+  operations: [sf-deploy, sf-org-analyze, sf-migration, sf-debug, sf-health-check, sf-release-notes]
+  cloud_products: [sf-agentforce, sf-dc-agentforce, sf-sales, sf-service, sf-data-cloud, sf-commerce, sf-cpq, sf-omnistudio]
+  consulting: [sf-discovery, sf-gap-analysis, sf-data-model, sf-automation-map, sf-solution-design,
+               sf-compliance-check, sf-estimate, sf-user-story, sf-sow-builder, sf-status-update,
+               sf-change-request, sf-cert-prep, sf-handoff, sf-decide]
+  client_facing: [sf-demo-script, sf-client-switch]
+  workflow: [sf-playbook]
+
+playbooks:
+  path: .claude/playbooks/
+  list: [discovery, design, build, deliver, investigate, enhance, weekly-review, proposal]
+  note: "Invoked via /sf-playbook <name>"
+
+agents:
+  path: .claude/agents/consulting/
+  orchestrator: orchestrator.md
+  contract: agent-contract.yaml
+  discovery_requirements: [discovery-intake, gap-analyst, requirements-writer, stakeholder-mapper]
+  design: [data-modeler, automation-mapper, security-designer, integration-architect]
+  delivery: [scope-estimator, sow-builder, status-reporter, demo-scripter, change-request-analyst]
+  investigation: [issue-diagnostician, impact-analyzer]
+  knowledge: [release-notes-analyst, cert-prep-coach]
+
+scheduled_tasks:
+  path: .claude/scheduled-tasks/
+  weekly_client_review:
+    cron: "30 8 * * 1"   # Monday 8:30 AM
+    runs: "/sf-playbook weekly-review"
+  org_health_checks:
+    cron: "0 16 * * 5"   # Friday 4:00 PM
+    runs: "/sf-health-check per connected org"
+  engagement_retro_reminder:
+    cron: "0 14 * * 5"   # Fridays (skill handles last-Friday logic)
+    runs: "/retro"
+  manual:
+    - "/sf-release-notes — run 3x/year around Salesforce releases"
+
 conventions:
   apex:
     indent: 4
