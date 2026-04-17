@@ -1,0 +1,43 @@
+ ›   Warning: @salesforce/cli update available from 2.125.2 to 2.127.2.
+Querying Data... done
+┌────────────────────┬──────────────────────────────────────────────────────────────┬────────────────────────────┬─────────┬──────────────────────────────┐
+│ ID                 │ CRONJOBDETAIL.NAME                                           │ CRONEXPRESSION             │ STATE   │ NEXTFIRETIME                 │
+├────────────────────┼──────────────────────────────────────────────────────────────┼────────────────────────────┼─────────┼──────────────────────────────┤
+│ 08eQg00000pC5JcIAK │ 9c9f6f01-ab74-786e-4229-544fff5747f0                         │ 0 0 18 L */1 ?             │ WAITING │ 2026-03-31T22:00:00.000+0000 │
+│ 08eQg00000olPXfIAM │ Scheduled_Flow_Sync_with_Zapier-4                            │ 0 45 23 ? * * *            │ WAITING │ 2026-04-01T03:45:00.000+0000 │
+│ 08eHu00002xNdzGIAS │ ReportType Edge Data Loader Job for Org : 00DEk00000fUQrt    │ 0 21 22 ? * 3              │ WAITING │ 2026-04-01T05:21:00.000+0000 │
+│ 08eQg00000LILI6IAP │ Task_Record_Trigger_Flow-12                                  │ 0 0 5 ? * * *              │ WAITING │ 2026-04-01T09:00:00.000+0000 │
+│ 08e2E00001YZ6wAQAT │ 9b12b348-ced2-4544-2dec-6c9d03b4c1f5                         │ 0 0 8 ? * 1-7              │ WAITING │ 2026-04-01T12:00:00.000+0000 │
+│ 08e2E0000253ClYQAU │ Metalytics Data Loader Job for Org : 00DEk00000fUQrt         │ 0 24 6 ? * 1,2,3,4,5,6,7   │ WAITING │ 2026-04-01T13:24:00.000+0000 │
+│ 08e2E00002iKNQOQA4 │ 8d71f4bf-7deb-908f-72ec-44c49a909e52                         │ 0 0 6 ? * 1,6              │ WAITING │ 2026-04-03T10:00:00.000+0000 │
+│ 08eQg00000MG4jKIAT │ f66d97e7-08e7-030b-4943-123145ad327a                         │ 0 0 7 ? * 2,6              │ WAITING │ 2026-04-03T11:00:00.000+0000 │
+│ 08eQg00000MGEyUIAX │ a9fa1f67-5efe-a0bb-1f2e-7b6f9ed7c32e                         │ 0 0 7 ? * 2,6              │ WAITING │ 2026-04-03T11:00:00.000+0000 │
+│ 08eQg00000pBezUIAS │ e47dd33a-867d-1192-f4f4-42b248fa70c1                         │ 0 0 9 ? * 6                │ WAITING │ 2026-04-03T13:00:00.000+0000 │
+│ 08e2E00002W4cEEQAZ │ 056d9613-72d6-d87e-9047-38ac92e7715c                         │ 0 0 6 ? * 2                │ WAITING │ 2026-04-06T10:00:00.000+0000 │
+│ 08e2E00002W4cdrQAB │ c6aec06c-9192-a07c-186c-e5d02d231712                         │ 0 0 6 ? * 2                │ WAITING │ 2026-04-06T10:00:00.000+0000 │
+│ 08e2E00002fmDP5QAM │ cb9ec6fc-ae4d-4240-a9ae-e88ff0723243                         │ 0 0 6 ? * 2                │ WAITING │ 2026-04-06T10:00:00.000+0000 │
+│ 08eQg00000pBIUAIA4 │ 37bb0cf9-7252-0c11-d024-125cd9b5b8a7                         │ 0 0 6 ? * 2                │ WAITING │ 2026-04-06T10:00:00.000+0000 │
+│ 08eHu00002wylf5IAA │ 5f2477e2-f6a5-29c3-4226-6e9a8c17fc11                         │ 0 0 7 ? * 2                │ WAITING │ 2026-04-06T11:00:00.000+0000 │
+│ 08eQg00000J9tVNIAZ │ 63eafcdb-071d-598e-36e3-c9e1e4f30a35                         │ 0 0 7 ? * 2,3              │ WAITING │ 2026-04-06T11:00:00.000+0000 │
+│ 08eQg00000JdWTMIA3 │ a22b7866-b2be-77f4-3436-146a9de61b45                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eHu00002uAM02IAG │ d0c5f39a-1044-a09c-e4c8-1045dab1b730                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000JSQsjIAH │ b5187a03-d49c-dae6-9e7f-0d1329d07c19                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000JSSGHIA5 │ 80f4446a-e95a-6f29-7bea-d284f7b7350b                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000JSWOrIAP │ 1166e1c8-13e3-5463-2e19-cd874fcf25e6                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000JSaTqIAL │ 5a787da5-ff15-bbc8-094f-377d293765b7                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08e2E00002i0TuFQAU │ 749f4a06-6d28-b078-0aaf-1c087fe22939                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000Jdb6PIAR │ beb5311c-0189-d6ed-8e78-718738121746                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000MsN6DIAV │ ba3ff72b-2113-7004-915e-4c56608c08c8                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000ozEeAIAU │ 5f1f67ea-3820-b9de-8257-bd7c1f99bb9b                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000ozM8UIAU │ cdd23fa5-7d45-afc5-94c8-2627ea750c0f                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eQg00000pBxqjIAC │ bda86a34-1f72-95ac-3197-5d3a9ec80cfa                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T12:00:00.000+0000 │
+│ 08eHu00002tRuxbIAC │ 34cb8a41-14be-bf03-16f6-7193c05d62c7                         │ 0 0 9 ? * 2                │ WAITING │ 2026-04-06T13:00:00.000+0000 │
+│ 08eHu00002si6ydIAA │ b282004b-70a0-9baf-fe82-926daa3da1ff                         │ 0 0 9 ? * 2                │ WAITING │ 2026-04-06T13:00:00.000+0000 │
+│ 08eHu00002rvRnaIAE │ 9579d874-f16a-b1fc-0564-19366375317c                         │ 0 0 9 ? * 2                │ WAITING │ 2026-04-06T13:00:00.000+0000 │
+│ 08eQg00000JdYWoIAN │ 24485aac-8d7d-5b81-a98b-b079cdb6242f                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T15:00:00.000+0000 │
+│ 08eQg00000JSWWpIAP │ e14e42a2-fd44-802a-647b-ee4795d998c5                         │ 0 0 8 ? * 2                │ WAITING │ 2026-04-06T15:00:00.000+0000 │
+│ 08eQg00000o4CIjIAM │ 98fa121d-3ba9-e07b-b058-c6c619223206                         │ 0 0 11 ? * 2#1             │ WAITING │ 2026-04-06T15:00:00.000+0000 │
+│ 08eHu00002xNdzFIAS │ SRT Semantic Graph Edge Update Job for Org : 00DEk00000fUQrt │ 31 33 12 ? FEB,JUN,OCT 2#3 │ WAITING │ 2026-06-15T19:33:31.000+0000 │
+└────────────────────┴──────────────────────────────────────────────────────────────┴────────────────────────────┴─────────┴──────────────────────────────┘
+
+Total number of records retrieved: 35.

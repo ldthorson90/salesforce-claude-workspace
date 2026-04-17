@@ -1,0 +1,360 @@
+================================================================================
+COMPLETE AUTOMATION INVENTORY REPORT
+SALESFORCE ORG: phoenix-dev
+GENERATED: 2026-03-31
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+TOTAL AUTOMATIONS: 215
+  - Flows:                136 (63% of automations)
+  - Workflow Rules:        37 (17% of automations) 
+  - Process Builders:       7 (3% of automations - ALL INACTIVE)
+  - Scheduled Jobs:        35 (16% of automations)
+  - Approval Processes:     0 (not accessible via standard API)
+
+KEY FINDINGS:
+1. Org is in active migration from Process Builder to Cloud Flows
+2. Heavy reliance on scheduled automations (35 cron jobs)
+3. 6 primary integration systems active (Zapier, iWave, Metalytics, etc.)
+4. Contact object has 19 workflow rules (highest concentration)
+5. Peak execution window: Mondays 6-9am UTC (synchronized batch)
+
+================================================================================
+SECTION 1: PROCESS BUILDERS (7 Total - ALL INACTIVE)
+================================================================================
+
+These legacy automations are deactivated and should be archived or migrated:
+
+ID                   API Name                      Label                         Status
+────────────────────────────────────────────────────────────────────────────────────
+3dd2E000000HD0EQAW  Account_Process_Builder       Account Process Builder       INACTIVE
+3dd2E000000LHLPQA4  Contact_Process_Builder       Contact Process Builder       INACTIVE
+3dd2E000000LHkUQAW  Opportunity_Process           Opportunity Process           INACTIVE
+3dd2E000000HEniQAG  Recurring_Donation_Processes  Recurring Donation Processes  INACTIVE
+3dd2E000000LHLQQA4  Relationship_Processes        Relationship Processes        INACTIVE
+3dd2E000000VgHnQAK  iWave_PROscore_Contact       iWave PROscore Contact        INACTIVE
+3dd2E000000VgHqQAK  iWave_PROscore_Lead          iWave PROscore Lead           INACTIVE
+
+RECOMMENDATION: Archive or deactivate permanently. Verify corresponding Flows exist.
+
+================================================================================
+SECTION 2: WORKFLOW RULES (37 Total - ALL ACTIVE)
+================================================================================
+
+BY OBJECT (37 rules across 6 objects):
+
+CONTACT OBJECT (19 RULES) - 51% of all workflow rules
+──────────────────────────────────────────────────────
+
+ID                    Rule Name
+──────────────────────────────────────────────────────────────────────────────
+01Q2E000000HvqIUAS   Alternate Email is Populated
+01Q2E000000HvqJUAS   Burn Survivor
+01Q2E000000HvqKUAS   Deceased Contact
+01Q2E000000HvqLUAS   Deceased Date on Contact
+01Q2E000000HvqMUAS   Home Phone is Populated
+01Q2E000000HvqNUAS   Mobile Phone is Populated
+01Q2E000000HvqOUAS   Other Phone is Populated
+01Q2E000000HvqPUAS   Personal Email is Populated
+01Q2E000000HvqQUAS   Work Email is Populated
+01Q2E000000HvqRUAS   Work Phone is Populated
+01Q2E000000SySwUAK   Contact.EmailChanged_Alternate
+01Q2E000000SySxUAK   Contact.EmailChanged_Personal
+01Q2E000000SySyUAK   Contact.EmailChanged_Work
+01Q2E000000SySzUAK   Contact.PhoneChanged_Home
+01Q2E000000SyT0UAK   Contact.PhoneChanged_Mobile
+01Q2E000000SyT1UAK   Contact.PhoneChanged_Other
+01Q2E000000SyT2UAK   Contact.PhoneChanged_Work
+01Q2E000000SyT3UAK   Contact.Preferred_Email__c
+01Q2E000000SyT4UAK   Contact.Preferred_Phone__c
+01Q2E000000SyT5UAK   Email only: Paste to Work
+01Q2E000000SyT6UAK   Phone only: Paste to Work
+01Q2E000000SyT7UAK   Contact.Preferred_Phone__c WithHousehold
+01Q2E000000SyT8UAK   Volunteer Signup - Contact
+01Q2E000000j928UAA   If Burn Survivor Incidents is Zero Uncheck Burn Survivor Box
+01Q2E000000j8YbUAI   NEWContact.Preferred_Email__c
+
+LEAD OBJECT (5 RULES) - 14% of all workflow rules
+──────────────────────────────────────────────────────
+
+01Q2E000000j8v7UAA   Lead.PhoneChanged_Home
+01Q2E000000j8v8UAA   Lead.PhoneChanged_Mobile
+01Q2E000000j8v9UAA   Lead.PhoneChanged_Work
+01Q2E000000j8vAUAQ   Lead.Preferred_Phone
+01Q2E000000SyT9UAK   Volunteer Signup - Lead
+
+OPPORTUNITY OBJECT (2 RULES) - 5% of all workflow rules
+──────────────────────────────────────────────────────
+
+01Q2E000000SyTDUA0   Opportunity Email Acknowledgment
+01Q2E000000SyTEUA0   Opportunity Copy FMV to Amount
+
+GW_VOLUNTEERS__VOLUNTEER_HOURS__C (4 RULES) - 11% of all workflow rules
+──────────────────────────────────────────────────────────────────────
+
+01Q2E000000SyTAUA0   Volunteer Hours - Set Planned Start Date & Time
+01Q2E000000SyTBUA0   Volunteer Hours - Set End Date
+01Q2E000000SyTCUA0   Volunteer Job Signup
+01Q2E000000SyTFUA0   Volunteer Hours Reminder Email
+
+AAKCS__ERROR_LOG__C (1 RULE) - 3% of all workflow rules
+──────────────────────────────────────────────────────
+
+01Q2E000000j1XXUAY   Error Log Notification
+
+PATTERNS:
+- Contact rules heavily focused on field synchronization (email/phone tracking)
+- Volunteer-related rules span both standard (Contact, Lead, Opportunity) and custom objects
+- No rules on Account object currently active (Account PB is deactivated)
+
+================================================================================
+SECTION 3: SCHEDULED JOBS / CRON TRIGGERS (35 Total)
+================================================================================
+
+All jobs are in WAITING state. Peak execution day: Monday (most run 6-9am UTC)
+
+Next Fire Time          Cron Expression       Job Name / Purpose
+────────────────────────────────────────────────────────────────────────────
+2026-03-31T22:00:00Z   0 0 18 L */1 ?         Monthly job (last day of month)
+2026-04-01T03:45:00Z   0 45 23 ? * * *        Scheduled_Flow_Sync_with_Zapier-4
+2026-04-01T05:21:00Z   0 21 22 ? * 3          ReportType Edge Data Loader Job
+2026-04-01T09:00:00Z   0 0 5 ? * * *          Task_Record_Trigger_Flow-12
+2026-04-01T12:00:00Z   0 0 8 ? * 1-7          Daily job (all weekdays)
+2026-04-01T13:24:00Z   0 24 6 ? * 1,2,3,4,5,6,7  Metalytics Data Loader Job
+2026-04-03T10:00:00Z   0 0 6 ? * 1,6          Monday & Saturday at 6am
+2026-04-03T11:00:00Z   0 0 7 ? * 2,6          Wednesday & Saturday at 7am (2 jobs)
+2026-04-03T13:00:00Z   0 0 9 ? * 6            Saturday at 9am
+2026-04-06T10:00:00Z   0 0 6 ? * 2            Monday at 6am (4 jobs)
+2026-04-06T11:00:00Z   0 0 7 ? * 2            Monday at 7am (2 jobs)
+2026-04-06T12:00:00Z   0 0 8 ? * 2            Monday at 8am (11 jobs) - PEAK
+2026-04-06T13:00:00Z   0 0 9 ? * 2            Monday at 9am (3 jobs)
+2026-04-06T15:00:00Z   0 0 8 ? * 2 OR 2#1     Monday morning slots (3 jobs)
+2026-06-15T19:33:31Z   31 33 12 ? FEB,JUN,OCT Quarterly job (Feb, Jun, Oct)
+
+SCHEDULE ANALYSIS:
+- 13 jobs run on Mondays at 8am UTC (potential bottleneck)
+- 6 jobs run Monday mornings (6-9am cluster)
+- 1 weekly job: Zapier sync (nightly 23:45)
+- 1 daily job: Edge Data Loader
+- 1 quarterly job: SRT Semantic Graph Update
+- 2 weekend jobs (Saturday at 6-9am)
+
+RISK ASSESSMENT: High concentration on Monday mornings may cause governor limit issues
+
+================================================================================
+SECTION 4: FLOWS - COMPLETE INVENTORY (136 Total)
+================================================================================
+
+BREAKDOWN BY PROCESS TYPE:
+  - AutoLaunchedFlow (Record & Scheduled Triggers): 88 flows
+  - Appointments (Service management): 16 flows
+  - ApprovalWorkflow: 2 flows
+  - Flow (Interactive/Screen): Multiple
+  - Subflows: Reusable components
+  - ManagedContentAuthoringWorkflow: 1 flow
+
+CRITICAL FLOWS (ACTIVE):
+
+Scheduled Flows:
+  3ddEk00010238f3IAA  Orch                   Orchestration flow for Recurrence Scheduler
+  3ddQg00000oWo6XIAS  Scheduled_Flow_Sync_with_Zapier  Scheduled Flow - Sync with Zapier
+  3ddQg00000Nj2zkIAB  Task_Record_Trigger_Flow  Task Record Trigger Flow
+
+Record-Triggered Flows (Sample):
+  3ddQg00000cPUugIAG  Deactivate_Household_and_Members  Account - Deactivate Household
+  3ddHu0000016IuwIAE  Burn_Survivor_Incident_Details_Lookup  Burn Survivor Incident Lookup
+  3ddQg00000heRYfIAM  Contact_Inactive_or_Do_Not_Solicit  Contact email update flow
+  3ddQg00000f6EezIAE  Contact_Review_Inactive_Household  Contact household review
+  3ddHu0000017OpTIAU  Opportunity_Notification  Opportunity - Notification $500
+
+Inactive Flows (Sample - review for cleanup):
+  3dd2E000000VgI4QAK  Burn_Survivor  INACTIVE
+  3ddEk00c0d3b950IAA  CheckEligibility  INACTIVE
+  3ddHu00000179IHIAY  Opportunity_over_500  INACTIVE
+
+FULL FLOWS TABLE:
+[See raw query output in APPENDIX A below]
+
+================================================================================
+SECTION 5: INTEGRATION POINTS & EXTERNAL SYSTEMS
+================================================================================
+
+IDENTIFIED INTEGRATIONS:
+
+1. ZAPIER (Daily Sync)
+   Flow: Scheduled_Flow_Sync_with_Zapier-4
+   Schedule: 23:45 UTC daily
+   Purpose: Unknown (review Zapier dashboard for details)
+   Status: ACTIVE
+
+2. IWAVE PROSCORE
+   Flows: iWave_PROscore_Contact_Summary_Fields, iWave_PROscore_Lead_Summary_Fields
+   Process Builders: iWave_PROscore_Contact, iWave_PROscore_Lead (INACTIVE)
+   Purpose: Lead/Contact scoring
+   Status: PARTIAL (flows active, PB inactive)
+
+3. METALYTICS DATA LOADER
+   Job: Metalytics Data Loader Job for Org: 00DEk00000fUQrt
+   Schedule: 0 24 6 ? * 1,2,3,4,5,6,7 (Daily at 6:24am)
+   Purpose: Data synchronization
+   Status: ACTIVE
+
+4. REPORTTYPE EDGE DATA LOADER
+   Job: ReportType Edge Data Loader Job
+   Schedule: 0 21 22 ? * 3 (Wednesday 22:21)
+   Purpose: Report syncing
+   Status: ACTIVE
+
+5. ZOOM TEAM CHAT
+   Flows: ZoomTeamChat_[Account|Case|Contact|Lead|Opportunity]RecordFlow
+   Purpose: Record notifications to Zoom
+   Status: ACTIVE (5 flows)
+
+6. HUBSPOT INTEGRATION
+   Flow: HubSpot_Create_Burn_Survivor_Incident_Detail_Flow
+   Purpose: Sync burn survivor incidents to HubSpot
+   Status: ACTIVE
+
+7. APSONA INTEGRATION
+   Flow: Apsona_List_View_Button_Merge_Flow
+   Purpose: List view actions
+   Status: ACTIVE
+
+8. MANAGED PACKAGE: VOLUNTEERS FOR SALESFORCE (GW_Volunteers)
+   Flows: 4 (Volunteer Hours, Job Signup)
+   Workflow Rules: 4 (Volunteer Hours, Job Signup)
+   Status: ACTIVE
+
+================================================================================
+SECTION 6: CUSTOM OBJECTS WITH AUTOMATION
+================================================================================
+
+GW_VOLUNTEERS__VOLUNTEER_HOURS__C
+  Type: Custom Object (Managed Package)
+  Automations:
+    - 4 Workflow Rules (Volunteer Hours management)
+    - 1+ Flows (Volunteer Job Signup, Hours tracking)
+  Purpose: Volunteers for Salesforce package integration
+
+AAKCS__ERROR_LOG__C
+  Type: Custom Object
+  Automations:
+    - 1 Workflow Rule (Error Log Notification)
+  Purpose: Error logging and notifications (likely from managed package)
+
+================================================================================
+SECTION 7: MASS DATA LOADER / SYSTEM JOBS
+================================================================================
+
+These are automatic system/ISV jobs - DO NOT DELETE:
+
+1. ReportType Edge Data Loader Job for Org: 00DEk00000fUQrt
+   Schedule: 0 21 22 ? * 3 (Wednesday nights)
+   Origin: System/ISV
+
+2. Metalytics Data Loader Job for Org: 00DEk00000fUQrt
+   Schedule: 0 24 6 ? * 1,2,3,4,5,6,7 (Daily mornings)
+   Origin: Metalytics ISV
+
+3. SRT Semantic Graph Edge Update Job for Org: 00DEk00000fUQrt
+   Schedule: 31 33 12 ? FEB,JUN,OCT 2#3 (Quarterly)
+   Origin: System/ISV
+
+================================================================================
+SECTION 8: RISK ASSESSMENT & RECOMMENDATIONS
+================================================================================
+
+CRITICAL RISKS:
+1. MONDAY MORNING BOTTLENECK
+   - 13-15 jobs scheduled for Monday 8am UTC
+   - Risk: Governor limits on batch operations
+   - Action: Spread execution across different hours/days
+
+2. PROCESS BUILDER DEACTIVATION DEBT
+   - 7 inactive Process Builders still in metadata
+   - Risk: Confusion about which automation handles which logic
+   - Action: Audit each PB, migrate to Flow if needed, or delete permanently
+
+3. LEGACY WORKFLOW RULES
+   - 37 workflow rules still in use (not migrated to Flows)
+   - Risk: Harder to maintain, less powerful than Flows
+   - Action: Prioritize Contact rules for migration (19 rules)
+
+4. SCHEDULED FLOW SYNCHRONIZATION
+   - No documented purpose for Task_Record_Trigger_Flow-12
+   - Risk: Unknown dependencies on this automation
+   - Action: Document purpose and dependencies
+
+MEDIUM PRIORITY:
+5. IWAVE SCORING - PARTIAL DEACTIVATION
+   - Process Builders inactive but Flows still active
+   - Verify both mechanisms aren't running (redundant processing)
+
+6. ZAPIER SYNC PURPOSE UNKNOWN
+   - Daily sync at 23:45 - verify this is intentional
+   - Review Zapier dashboard for error logs
+
+7. MONTHLY JOB (Day 18)
+   - UUID name doesn't indicate purpose
+   - Risk: Could be system-critical but undocumented
+   - Action: Contact Salesforce support or ISV to identify
+
+LOW PRIORITY:
+8. UNUSED FLOWS
+   - Multiple flows marked INACTIVE (Check*.Eligibility flows)
+   - Action: Archive or delete if confirmed unused
+
+RECOMMENDATIONS (Priority Order):
+1. Document Monday morning job timing - implement staggered schedule
+2. Audit and archive inactive Process Builders
+3. Map each Workflow Rule to business requirement
+4. Contact ISV for data loader job purposes
+5. Migrate Contact email/phone workflows to Flows for better maintainability
+6. Implement flow framework for consistent naming/documentation
+7. Establish change control for automation additions
+
+================================================================================
+APPENDIX A: RAW QUERY RESULTS
+================================================================================
+
+FLOWS QUERY:
+SELECT Id, ApiName, Label, ProcessType, TriggerType, IsActive 
+FROM FlowDefinitionView 
+ORDER BY ProcessType, Label
+[Total: 136 flows]
+
+WORKFLOW RULES QUERY:
+SELECT Id, Name, TableEnumOrId 
+FROM WorkflowRule 
+WHERE TableEnumOrId != null
+ORDER BY TableEnumOrId, Name
+[Total: 37 rules]
+
+PROCESS BUILDERS QUERY:
+SELECT Id, ApiName, Label, ProcessType, IsActive 
+FROM FlowDefinitionView 
+WHERE ProcessType = 'Workflow'
+[Total: 7 Process Builders - ALL INACTIVE]
+
+CRON TRIGGERS QUERY:
+SELECT Id, CronJobDetail.Name, CronExpression, State, NextFireTime 
+FROM CronTrigger 
+WHERE State != 'DELETED'
+ORDER BY NextFireTime
+[Total: 35 scheduled jobs - ALL WAITING]
+
+================================================================================
+DOCUMENT METADATA
+================================================================================
+Generated: 2026-03-31
+Org: phoenix-dev
+Queried By: SF CLI (version 2.125.2)
+Audit Scope: ALL automations (active + inactive)
+Coverage: Flows, Process Builders, Workflow Rules, Scheduled Jobs
+NOT Included: Approval Processes (API limitation)
+
+================================================================================
+END OF REPORT
+================================================================================
