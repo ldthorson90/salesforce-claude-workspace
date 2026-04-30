@@ -1,0 +1,78 @@
+SALESFORCE AUTOMATION AUDIT - FILE INDEX
+Generated: 2026-03-31
+Org: phoenix-dev
+
+FILES INCLUDED IN THIS AUDIT:
+================================================================================
+
+1. COMPLETE_AUTOMATION_INVENTORY.txt (MAIN REPORT)
+   - Executive summary with key findings
+   - Detailed breakdowns of all automation types
+   - Risk assessment and recommendations
+   - Integration points identified
+   - Full appendix with raw query results
+   
+2. AUTOMATION_INVENTORY_SUMMARY.txt (QUICK REFERENCE)
+   - High-level statistics
+   - Observations and patterns
+   - Executive overview
+
+3. WORKFLOW_RULES_DETAILED.txt (RAW DATA)
+   - Complete list of 37 workflow rules
+   - Organized by object type
+   - ID, name, and target object for each rule
+
+4. SCHEDULED_JOBS_DETAILED.txt (RAW DATA)
+   - All 35 CronTrigger jobs
+   - Next fire times and cron expressions
+   - Job names/purposes
+
+AUTOMATION COUNTS:
+- Flows: 136 (see COMPLETE_AUTOMATION_INVENTORY.txt for full list)
+- Process Builders: 7 (all INACTIVE)
+- Workflow Rules: 37 (all ACTIVE)
+- Scheduled Jobs: 35 (all WAITING)
+- Approval Processes: 0 (API limitation)
+TOTAL: 215 automations
+
+KEY INSIGHTS:
+1. Active migration from Process Builder to Flows
+2. 51% of workflow rules concentrated on Contact object
+3. 13 scheduled jobs run Monday morning (8am UTC) - potential bottleneck
+4. 6 integration systems identified (Zapier, iWave, Metalytics, etc.)
+5. 2 managed packages in use (Volunteers for Salesforce, others)
+
+CRITICAL FINDINGS:
+- Monday 8am UTC bottleneck: 13 jobs may trigger governor limits
+- 7 inactive Process Builders need archival or deletion
+- Task_Record_Trigger_Flow-12 purpose undocumented
+- iWave scoring: mixed active/inactive state (check for redundancy)
+
+RECOMMENDED ACTIONS (Priority Order):
+1. Stagger Monday morning job execution times
+2. Audit inactive Process Builders for cleanup
+3. Document all Workflow Rule business requirements
+4. Identify and document data loader job purposes
+5. Migrate Contact email/phone workflows to Flows
+6. Implement flow naming/documentation framework
+
+QUERY METHODOLOGY:
+All data obtained via SF CLI (Salesforce CLI 2.125.2) using:
+- SOQL queries on FlowDefinitionView (Flows)
+- SOQL queries on WorkflowRule (Workflow Rules via Tooling API)
+- SOQL queries on CronTrigger (Scheduled jobs)
+- FlowDefinitionView with ProcessType='Workflow' filter (Process Builders)
+
+Approval Processes not available - ApprovalProcess sObject not supported in this org version.
+
+FOR CONSULTING ENGAGEMENT USE:
+This inventory is suitable for:
+- Architecture review meetings
+- Risk assessment documentation
+- Migration planning (PB to Flows)
+- Integration impact analysis
+- Disaster recovery planning
+- System performance optimization
+- Change control baseline
+
+================================================================================

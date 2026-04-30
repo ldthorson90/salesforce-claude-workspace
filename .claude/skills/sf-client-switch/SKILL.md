@@ -19,12 +19,12 @@ Instantly load the full context for a client engagement. Surfaces org auth statu
 Search for a matching SFDX project under the workspace:
 
 ```bash
-find "/home/luke/Cowork Projects/Salesforce Workspace" -maxdepth 2 -name "CLAUDE.md" | xargs grep -li "<client-name>" 2>/dev/null
+find "/home/luke/work/Salesforce Workspace" -maxdepth 2 -name "CLAUDE.md" | xargs grep -li "<client-name>" 2>/dev/null
 ```
 
 Also check directory names:
 ```bash
-ls "/home/luke/Cowork Projects/Salesforce Workspace/" | grep -i "<client-name>"
+ls "/home/luke/work/Salesforce Workspace/" | grep -i "<client-name>"
 ```
 
 If multiple matches found: list them and ask the user to confirm which one.

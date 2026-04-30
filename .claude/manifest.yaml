@@ -1,0 +1,86 @@
+# Salesforce Workspace — Module Manifest
+# Owns: physical layout, project index, org registry, shared asset paths
+# Does NOT duplicate: skills, agents, playbooks, conventions, toolchain (those live in context.yaml)
+# Rule: read this instead of exploring the directory tree
+
+workspace:
+  type: multi-project       # container for N independent SFDX projects
+  has_code: false           # no SFDX projects with code yet — project stubs exist, no sfdx-project.json
+  root: ~/work/cliffrose/salesforce/
+
+# ── SFDX Projects ─────────────────────────────────────────────────────────────
+# One entry per client SFDX project directory. Empty until first engagement project is created.
+# Schema for each entry:
+#   <slug>:
+#     path: <dir>/                     # relative to workspace root
+#     org: <alias>                     # primary connected org (alias defined in orgs: section)
+#     client: <engagement-slug>        # maps to work/consulting/engagements/<slug>
+#     status: active | paused | archived
+#     sfdx_project: <dir>/sfdx-project.json
+#     note: "<optional context>"
+projects:
+  sherwood-park:
+    path: sherwood-park/
+    org: sherwood-dev          # alias to populate in orgs: once connected
+    client: sherwood-park      # work/sherwood-park/
+    status: active
+    sfdx_project: sherwood-park/sfdx-project.json  # not yet initialized
+    note: "RVA Sherwood Park — Richmond northside community nonprofit. Org not yet connected."
+
+# ── Org Registry ──────────────────────────────────────────────────────────────
+# One entry per connected org — avoids running `sf org list` each session.
+# Rule: org aliases are per-project, never shared across engagements.
+# Schema:
+#   <alias>:
+#     type: production | sandbox | scratch | dev
+#     instance_url: https://<instance>.salesforce.com
+#     username: <username>
+#     project: <slug>     # which project this org belongs to
+#     status: connected | expired | unknown
+orgs: {}
+
+# ── Config ────────────────────────────────────────────────────────────────────
+config:
+  context: context.yaml
+  settings: settings.json
+  workflow_schema: workflow-schema.yaml
+
+# ── Shared Assets ─────────────────────────────────────────────────────────────
+# Paths used across all projects (not project-specific)
+skills:
+  path: skills/
+  note: "43 skills — see context.yaml skills section for categorized listing"
+
+playbooks:
+  path: playbooks/
+  note: "8 playbooks — invoked via /sf-playbook <name>"
+
+agents:
+  path: agents/consulting/
+  orchestrator: agents/consulting/orchestrator.md
+  contract: agents/consulting/agent-contract.yaml
+
+evals:
+  path: evals/
+
+scheduled_tasks:
+  path: scheduled-tasks/
+
+# ── Reference Materials ───────────────────────────────────────────────────────
+reference:
+  architect_guides:
+    path: salesforce-architect-decision-guides/
+    use: "Architecture pattern guidance — record-triggered automation, event-driven, data integration, async, forms"
+  automation_inventory:
+    path: docs/
+    files:
+      index: docs/AUTOMATION_INVENTORY_INDEX.txt
+      summary: docs/AUTOMATION_INVENTORY_SUMMARY.txt
+      complete: docs/COMPLETE_AUTOMATION_INVENTORY.txt
+      quick_ref: docs/AUTOMATION_QUICK_REFERENCE.txt
+      scheduled_jobs: docs/SCHEDULED_JOBS_DETAILED.txt
+      workflow_rules: docs/WORKFLOW_RULES_DETAILED.txt
+    use: "Org automation audit — legacy workflow rules, scheduled jobs, process builders"
+  research:
+    compass_artifact: compass_artifact_wf-d4aa7e16-76b0-4da0-bf5f-6c9d68a8c890_text_markdown.md
+    use: "Claude ecosystem tools for Salesforce professionals"

@@ -1,0 +1,159 @@
+================================================================================
+AUTOMATION INVENTORY - QUICK REFERENCE TABLE
+SALESFORCE ORG: phoenix-dev | DATE: 2026-03-31
+================================================================================
+
+SUMMARY BY AUTOMATION TYPE
+================================================================================
+
+Type                  Count    Status              Key Points
+──────────────────────────────────────────────────────────────────────────────
+Flows                 136      Mixed              63% of all automations
+  - AutoLaunchedFlow   ~88     Active/Inactive    Record & scheduled triggers
+  - Appointments       16      Active             Service mgmt flows
+  - ApprovalWorkflow   2       Active             Approval routing
+  - Interactive        ~30     Mixed              Screen/UI flows
+
+Process Builders      7        ALL INACTIVE       Legacy - archive pending
+Workflow Rules        37       ALL ACTIVE         Contact (19), Lead (5), Opp (2)
+Scheduled Jobs        35       ALL WAITING        Peak: Monday 8am UTC (13 jobs)
+Approval Processes    0        N/A                Not queryable in this org
+────────────────────────────────────────────────────────────────────────────────
+TOTAL AUTOMATIONS     215      See Details       Consulting audit complete
+
+================================================================================
+WORKFLOW RULES BY OBJECT (37 Total)
+================================================================================
+
+Object Name                          Count    Purpose
+──────────────────────────────────────────────────────────────────────────────
+Contact                              19       Email/phone field sync, burn survivor
+Lead                                 5        Phone tracking, volunteer signups
+Opportunity                          2        Email ack, FMV copy
+GW_Volunteers__Volunteer_Hours__c    4        Volunteer mgmt, hours tracking
+AAKCS__Error_Log__c                  1        Error notification
+────────────────────────────────────────────────────────────────────────────────
+TOTAL WORKFLOW RULES                 37       All active, 19 on Contact
+
+================================================================================
+SCHEDULED JOBS EXECUTION PATTERN
+================================================================================
+
+Execution Day/Time              Count    Examples / Note
+──────────────────────────────────────────────────────────────────────────────
+Monday 6am UTC                  4        Generic data jobs
+Monday 7am UTC                  2        Batch process flows
+Monday 8am UTC                  13       PEAK - BOTTLENECK RISK
+Monday 9am UTC                  3        Late morning jobs
+Wednesday 22:21 UTC             1        ReportType Edge Data Loader
+Saturday 6am UTC                2        Weekend processing
+Saturday 7am UTC                2        Weekend processing
+Saturday 9am UTC                1        Weekend batch
+Daily 06:24am UTC               1        Metalytics Data Loader
+Daily 23:45 UTC                 1        Zapier sync (nightly)
+Monthly (Day 18, 6pm UTC)        1        Monthly aggregation
+Quarterly (Feb/Jun/Oct)          1        SRT Semantic Graph Update
+────────────────────────────────────────────────────────────────────────────────
+TOTAL SCHEDULED JOBS            35       Heavy Monday concentration
+
+RISK: 13 jobs on Monday 8am may exceed governor limits. RECOMMEND STAGGER.
+
+================================================================================
+ACTIVE INTEGRATIONS (6 Systems)
+================================================================================
+
+System              Mechanism           Status    Schedule/Trigger
+──────────────────────────────────────────────────────────────────────────────
+Zapier              Scheduled Flow      ACTIVE    Daily 23:45 UTC
+iWave PROscore      Flows + Flows       MIXED     RecordAfterSave
+Metalytics          Data Loader Job     ACTIVE    Daily 06:24 UTC
+Zoom Team Chat      Record Flows (5)    ACTIVE    RecordAfterSave
+HubSpot             Record Flow         ACTIVE    RecordAfterSave
+Apsona              List View Flow      ACTIVE    Manual invocation
+Volunteers for SF   Pkg + WF Rules      ACTIVE    RecordAfterSave
+────────────────────────────────────────────────────────────────────────────────
+TOTAL INTEGRATIONS  6 major systems    3 Active + Mixed + Pkg
+
+================================================================================
+PROCESS BUILDER MIGRATION STATUS (LEGACY)
+================================================================================
+
+API Name                        Label                          Status    Action
+──────────────────────────────────────────────────────────────────────────────
+Account_Process_Builder         Account Process Builder        INACTIVE  ARCHIVE
+Contact_Process_Builder         Contact Process Builder        INACTIVE  ARCHIVE
+Opportunity_Process             Opportunity Process            INACTIVE  ARCHIVE
+Recurring_Donation_Processes    Recurring Donation Processes   INACTIVE  ARCHIVE
+Relationship_Processes          Relationship Processes         INACTIVE  ARCHIVE
+iWave_PROscore_Contact         iWave PROscore Contact         INACTIVE  ARCHIVE
+iWave_PROscore_Lead            iWave PROscore Lead            INACTIVE  ARCHIVE
+────────────────────────────────────────────────────────────────────────────────
+TOTAL PROCESS BUILDERS          7 (all inactive)               CLEANUP   REQUIRED
+
+================================================================================
+AUTOMATION DENSITY BY OBJECT
+================================================================================
+
+Standard Objects:
+  Contact:        19 WF Rules + ~15 Flows = 34 automations (highest)
+  Lead:           5 WF Rules + ~8 Flows = 13 automations
+  Opportunity:    2 WF Rules + ~10 Flows = 12 automations
+  Account:        0 WF Rules + ~8 Flows = 8 automations (PB inactive)
+
+Custom Objects:
+  GW_Volunteers__Volunteer_Hours__c:  4 WF Rules + 4 Flows = 8 automations
+  AAKCS__Error_Log__c:                1 WF Rule = 1 automation
+
+Service Objects:
+  ServiceAppointment:  16 Flows = 16 automations (Appointments)
+
+Approval:
+  General:  2 Approval Workflows = 2 automations
+
+Subflows/Utilities:
+  Various:  ~40 Flows (reusable components)
+
+================================================================================
+CRITICAL AUTOMATION DEPENDENCIES
+================================================================================
+
+Automation Name                            Purpose                    Risk Level
+──────────────────────────────────────────────────────────────────────────────
+Scheduled_Flow_Sync_with_Zapier-4         External data sync         MEDIUM - undocumented
+Task_Record_Trigger_Flow-12                Task automation            HIGH - purpose unknown
+Contact email/phone WF Rules (19 total)    Field synchronization      MEDIUM - legacy rules
+Metalytics Data Loader Job                 External data sync         HIGH - ISV critical
+iWave PROscore Contact/Lead                Lead scoring               HIGH - mixed PB/Flow state
+ZoomTeamChat Record Flows (5)              Chat notifications         LOW - standalone
+Volunteer Hours Mgmt (4 WF + 4 Flow)       Volunteer tracking         MEDIUM - business critical
+
+RECOMMENDATIONS:
+1. Document purpose and dependencies for Zapier sync
+2. Audit Task_Record_Trigger_Flow-12 - unknown purpose
+3. Verify Metalytics job - check ISV agreement
+4. Reconcile iWave scoring (PB inactive, Flows active)
+5. Consolidate Contact rules - 19 is high maintenance burden
+
+================================================================================
+AUDIT CHECKLIST FOR CONSULTING ENGAGEMENT
+================================================================================
+
+[_] All 136 flows reviewed for active status
+[_] All 37 workflow rules mapped to business requirements
+[_] All 7 Process Builders confirmed inactive/archived
+[_] All 35 scheduled jobs documented for purpose
+[_] Monday 8am bottleneck flagged for optimization
+[_] 6 integrations verified in external systems
+[_] Managed packages identified (Volunteers, others)
+[_] 2 custom objects with automation reviewed
+[_] Inactive flows identified for cleanup
+[_] Data loader jobs verified with ISVs
+[_] Cross-object automation dependencies mapped
+[_] Approval processes check completed (not available)
+[_] Governor limit impact assessed
+[_] Disaster recovery considerations documented
+[_] Change control baseline established
+
+================================================================================
+END OF QUICK REFERENCE
+================================================================================

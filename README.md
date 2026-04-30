@@ -31,11 +31,11 @@ Three independent layers enforce this:
 ### Step 1 — Open the workspace in Claude Code
 
 ```bash
-cd "/home/luke/Cowork Projects/Salesforce Workspace"
+cd path/to/salesforce-claude-workspace
 claude
 ```
 
-Or from Cowork: open a new Claude Code session and select this folder as the project root.
+Or open Claude Code and select the workspace folder as the project root.
 
 ### Step 2 — Scaffold a project for the client
 
@@ -84,8 +84,8 @@ The deploy skill runs Code Analyzer, executes tests, reports coverage, and tags 
 ## Quick Start (First-Time Setup)
 
 ```bash
-# Clone into your Cowork Projects folder
-git clone https://github.com/ldthorson90/salesforce-claude-workspace.git
+# Clone the workspace
+git clone https://github.com/your-username/salesforce-claude-workspace.git
 cd salesforce-claude-workspace
 
 # Open in Claude Code

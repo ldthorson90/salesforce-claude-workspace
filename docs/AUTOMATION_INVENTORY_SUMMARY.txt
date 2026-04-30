@@ -1,0 +1,189 @@
+================================================================================
+SALESFORCE AUTOMATION INVENTORY - PHOENIX-DEV ORG
+Generated: 2026-03-31
+================================================================================
+
+SUMMARY STATISTICS:
+- Total Flows: 136
+- Process Builders: 7 (all INACTIVE)
+- Workflow Rules: 37
+- Scheduled Jobs (CronTriggers): 35
+- Approval Processes: 0 (not found via Tooling API)
+
+================================================================================
+1. FLOWS (136 Total)
+================================================================================
+
+All flows are categorized by ProcessType below. Use this for complete listing.
+
+Active Flows by Type:
+- AutoLaunchedFlow (Scheduled, Flow): Track flows triggered by scheduled events
+- AutoLaunchedFlow (Record-triggered): Flows that respond to record changes
+- Flow: Interactive/Screen flows
+- ManagedContentAuthoringWorkflow: Content publishing flows
+- Appointments: Service appointment management flows
+- Subflows: Reusable flow components
+
+See detailed table below for each flow's status, API name, and trigger type.
+
+================================================================================
+2. PROCESS BUILDERS (7 Total) - ALL INACTIVE
+================================================================================
+
+ID                  │ APINAME                      │ LABEL                        │ PROCESSTYPE │ ISACTIVE
+3dd2E000000HD0EQAW │ Account_Process_Builder      │ Account Process Builder      │ Workflow    │ false
+3dd2E000000LHLPQA4 │ Contact_Process_Builder      │ Contact Process Builder      │ Workflow    │ false
+3dd2E000000LHkUQAW │ Opportunity_Process          │ Opportunity Process          │ Workflow    │ false
+3dd2E000000HEniQAG │ Recurring_Donation_Processes │ Recurring Donation Processes │ Workflow    │ false
+3dd2E000000LHLQQA4 │ Relationship_Processes       │ Relationship Processes       │ Workflow    │ false
+3dd2E000000VgHnQAK │ iWave_PROscore_Contact       │ iWave PROscore Contact       │ Workflow    │ false
+3dd2E000000VgHqQAK │ iWave_PROscore_Lead          │ iWave PROscore Lead          │ Workflow    │ false
+
+NOTES: All Process Builders are INACTIVE. Consider migrating to Flows if still needed.
+
+================================================================================
+3. WORKFLOW RULES (37 Total)
+================================================================================
+
+BY OBJECT:
+
+AAKCS__Error_Log__c (1 rule):
+  01Q2E000000j1XXUAY │ Error Log Notification
+
+Contact (19 rules):
+  01Q2E000000HvqIUAS │ Alternate Email is Populated
+  01Q2E000000HvqJUAS │ Burn Survivor
+  01Q2E000000HvqKUAS │ Deceased Contact
+  01Q2E000000HvqLUAS │ Deceased Date on Contact
+  01Q2E000000HvqMUAS │ Home Phone is Populated
+  01Q2E000000HvqNUAS │ Mobile Phone is Populated
+  01Q2E000000HvqOUAS │ Other Phone is Populated
+  01Q2E000000HvqPUAS │ Personal Email is Populated
+  01Q2E000000HvqQUAS │ Work Email is Populated
+  01Q2E000000HvqRUAS │ Work Phone is Populated
+  01Q2E000000SySwUAK │ Contact.EmailChanged_Alternate
+  01Q2E000000SySxUAK │ Contact.EmailChanged_Personal
+  01Q2E000000SySyUAK │ Contact.EmailChanged_Work
+  01Q2E000000SySzUAK │ Contact.PhoneChanged_Home
+  01Q2E000000SyT0UAK │ Contact.PhoneChanged_Mobile
+  01Q2E000000SyT1UAK │ Contact.PhoneChanged_Other
+  01Q2E000000SyT2UAK │ Contact.PhoneChanged_Work
+  01Q2E000000SyT3UAK │ Contact.Preferred_Email__c
+  01Q2E000000SyT4UAK │ Contact.Preferred_Phone__c
+  01Q2E000000SyT5UAK │ Email only: Paste to Work
+  01Q2E000000SyT6UAK │ Phone only: Paste to Work
+  01Q2E000000SyT7UAK │ Contact.Preferred_Phone__c WithHousehold
+  01Q2E000000SyT8UAK │ Volunteer Signup - Contact
+  01Q2E000000j928UAA │ If Burn Survivor Incidents is Zero Uncheck Burn Survivor Box
+  01Q2E000000j8YbUAI │ NEWContact.Preferred_Email__c
+
+GW_Volunteers__Volunteer_Hours__c (4 rules):
+  01Q2E000000SyTAUA0 │ Volunteer Hours - Set Planned Start Date & Time
+  01Q2E000000SyTBUA0 │ Volunteer Hours - Set End Date
+  01Q2E000000SyTCUA0 │ Volunteer Job Signup
+  01Q2E000000SyTFUA0 │ Volunteer Hours Reminder Email
+
+Lead (5 rules):
+  01Q2E000000j8v7UAA │ Lead.PhoneChanged_Home
+  01Q2E000000j8v8UAA │ Lead.PhoneChanged_Mobile
+  01Q2E000000j8v9UAA │ Lead.PhoneChanged_Work
+  01Q2E000000j8vAUAQ │ Lead.Preferred_Phone
+  01Q2E000000SyT9UAK │ Volunteer Signup - Lead
+
+Opportunity (2 rules):
+  01Q2E000000SyTDUA0 │ Opportunity Email Acknowledgment
+  01Q2E000000SyTEUA0 │ Opportunity Copy FMV to Amount
+
+================================================================================
+4. SCHEDULED JOBS / CRON TRIGGERS (35 Total - All WAITING State)
+================================================================================
+
+Next Fire Time               │ Cron Expression        │ Job Name
+────────────────────────────┼────────────────────────┼──────────────────────────────────────────────
+2026-03-31T22:00:00.000 UTC │ 0 0 18 L */1 ?         │ 9c9f6f01-ab74-786e-4229-544fff5747f0
+2026-04-01T03:45:00.000 UTC │ 0 45 23 ? * * *        │ Scheduled_Flow_Sync_with_Zapier-4
+2026-04-01T05:21:00.000 UTC │ 0 21 22 ? * 3          │ ReportType Edge Data Loader Job
+2026-04-01T09:00:00.000 UTC │ 0 0 5 ? * * *          │ Task_Record_Trigger_Flow-12
+2026-04-01T12:00:00.000 UTC │ 0 0 8 ? * 1-7          │ 9b12b348-ced2-4544-2dec-6c9d03b4c1f5
+2026-04-01T13:24:00.000 UTC │ 0 24 6 ? * 1,2,3...    │ Metalytics Data Loader Job
+2026-04-03T10:00:00.000 UTC │ 0 0 6 ? * 1,6          │ 8d71f4bf-7deb-908f-72ec-44c49a909e52
+2026-04-03T11:00:00.000 UTC │ 0 0 7 ? * 2,6          │ f66d97e7-08e7-030b-4943-123145ad327a
+2026-04-03T11:00:00.000 UTC │ 0 0 7 ? * 2,6          │ a9fa1f67-5efe-a0bb-1f2e-7b6f9ed7c32e
+2026-04-03T13:00:00.000 UTC │ 0 0 9 ? * 6            │ e47dd33a-867d-1192-f4f4-42b248fa70c1
+2026-04-06T10:00:00.000 UTC │ 0 0 6 ? * 2            │ 056d9613-72d6-d87e-9047-38ac92e7715c
+2026-04-06T10:00:00.000 UTC │ 0 0 6 ? * 2            │ c6aec06c-9192-a07c-186c-e5d02d231712
+2026-04-06T10:00:00.000 UTC │ 0 0 6 ? * 2            │ cb9ec6fc-ae4d-4240-a9ae-e88ff0723243
+2026-04-06T10:00:00.000 UTC │ 0 0 6 ? * 2            │ 37bb0cf9-7252-0c11-d024-125cd9b5b8a7
+2026-04-06T11:00:00.000 UTC │ 0 0 7 ? * 2            │ 5f2477e2-f6a5-29c3-4226-6e9a8c17fc11
+2026-04-06T11:00:00.000 UTC │ 0 0 7 ? * 2,3          │ 63eafcdb-071d-598e-36e3-c9e1e4f30a35
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ a22b7866-b2be-77f4-3436-146a9de61b45
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ d0c5f39a-1044-a09c-e4c8-1045dab1b730
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ b5187a03-d49c-dae6-9e7f-0d1329d07c19
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ 80f4446a-e95a-6f29-7bea-d284f7b7350b
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ 1166e1c8-13e3-5463-2e19-cd874fcf25e6
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ 5a787da5-ff15-bbc8-094f-377d293765b7
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ 749f4a06-6d28-b078-0aaf-1c087fe22939
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ beb5311c-0189-d6ed-8e78-718738121746
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ ba3ff72b-2113-7004-915e-4c56608c08c8
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ 5f1f67ea-3820-b9de-8257-bd7c1f99bb9b
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ cdd23fa5-7d45-afc5-94c8-2627ea750c0f
+2026-04-06T12:00:00.000 UTC │ 0 0 8 ? * 2            │ bda86a34-1f72-95ac-3197-5d3a9ec80cfa
+2026-04-06T13:00:00.000 UTC │ 0 0 9 ? * 2            │ 34cb8a41-14be-bf03-16f6-7193c05d62c7
+2026-04-06T13:00:00.000 UTC │ 0 0 9 ? * 2            │ b282004b-70a0-9baf-fe82-926daa3da1ff
+2026-04-06T13:00:00.000 UTC │ 0 0 9 ? * 2            │ 9579d874-f16a-b1fc-0564-19366375317c
+2026-04-06T15:00:00.000 UTC │ 0 0 8 ? * 2            │ 24485aac-8d7d-5b81-a98b-b079cdb6242f
+2026-04-06T15:00:00.000 UTC │ 0 0 8 ? * 2            │ e14e42a2-fd44-802a-647b-ee4795d998c5
+2026-04-06T15:00:00.000 UTC │ 0 0 11 ? * 2#1         │ 98fa121d-3ba9-e07b-b058-c6c619223206
+2026-06-15T19:33:31.000 UTC │ 31 33 12 ? FEB,JUN,OCT │ SRT Semantic Graph Edge Update Job
+
+NOTES:
+- 35 scheduled jobs in WAITING state
+- Most scheduled to run on specific days/times (many on Mondays at 6-9am)
+- One quarterly job (SRT Semantic Graph) runs in Feb, Jun, Oct
+- One monthly job (day 18 at 6pm UTC)
+
+================================================================================
+5. APPROVAL PROCESSES
+================================================================================
+
+No Approval Processes found in org. The ApprovalProcess sObject is not supported
+via standard Tooling API queries in this org version.
+
+================================================================================
+KEY OBSERVATIONS
+================================================================================
+
+1. FLOW DOMINANCE: 136 flows (active + inactive) vs 7 Process Builders (inactive)
+   - Clear migration from Process Builder to Flows has begun
+   - Recommend completing PB-to-Flow migration
+
+2. WORKFLOW RULES: 37 active rules across 6 objects
+   - Contact (19): Email/phone tracking, volunteer signups
+   - GW_Volunteers (4): Volunteer hour management
+   - Lead (5): Phone tracking, volunteer signups
+   - Opportunity (2): Email acknowledgments, FMV calculations
+   - Custom object (AAKCS Error Log): Error logging
+   
+3. SCHEDULED EXECUTIONS: 35 scheduled flows/jobs
+   - Peak execution times: Mondays 6-9am UTC
+   - Mix of third-party integrations (Zapier, iWave, Metalytics)
+   - Volunteer hour reminders and data loader jobs
+
+4. INTEGRATION POINTS:
+   - Zapier: Scheduled flow sync (daily at 23:45)
+   - iWave PROscore: Contact/Lead scoring (Process Builders - INACTIVE)
+   - Metalytics: Data loader jobs
+   - Edge Data Loader: ReportType syncs
+
+5. CUSTOM OBJECTS WITH AUTOMATION:
+   - GW_Volunteers__Volunteer_Hours__c: 4 workflow rules
+   - AAKCS__Error_Log__c: 1 workflow rule
+   
+6. MANAGED PACKAGES:
+   - GW_Volunteers (Volunteers for Salesforce)
+   - iWave PROscore integration
+   - Apsona package (list view flows)
+
+================================================================================
+END OF INVENTORY
+================================================================================
