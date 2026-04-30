@@ -104,7 +104,7 @@ and note: "Run `/sf-org-setup <alias>` for any org that isn't yet wired to the D
 ### Step 4: Verify Workspace MCPs (.mcp.json)
 
 ```bash
-test -f "/home/luke/work/salesforce/.mcp.json" && echo "EXISTS" || echo "MISSING"
+test -f "/home/luke/work/cliffrose/salesforce/.mcp.json" && echo "EXISTS" || echo "MISSING"
 ```
 
 **If EXISTS:** Read it and check for both `advanced-communities` and `sf-tsmz` keys in `mcpServers`.
@@ -171,8 +171,8 @@ test -d "$HOME/Documents/Obsidian Vault/Cert Prep" && echo "ok" || echo "missing
 ### Step 6: Verify Git Pre-Commit Hook
 
 ```bash
-test -L "/home/luke/work/salesforce/.git/hooks/pre-commit" && echo "SYMLINK" \
-  || test -f "/home/luke/work/salesforce/.git/hooks/pre-commit" && echo "FILE" \
+test -L "/home/luke/work/cliffrose/salesforce/.git/hooks/pre-commit" && echo "SYMLINK" \
+  || test -f "/home/luke/work/cliffrose/salesforce/.git/hooks/pre-commit" && echo "FILE" \
   || echo "MISSING"
 ```
 
@@ -180,7 +180,7 @@ Note: the workspace root is a git repo. Individual SFDX project directories are 
 
 **If SYMLINK:** Verify the target resolves:
 ```bash
-readlink -f "/home/luke/work/salesforce/.git/hooks/pre-commit"
+readlink -f "/home/luke/work/cliffrose/salesforce/.git/hooks/pre-commit"
 ```
 - If resolves to `~/.claude/hooks/git-pre-commit`: record as correctly linked
 - If resolves elsewhere: warn with the actual target path
@@ -190,7 +190,7 @@ readlink -f "/home/luke/work/salesforce/.git/hooks/pre-commit"
 **If MISSING:** If not `--check-only`:
 ```bash
 ln -sf ~/.claude/hooks/git-pre-commit \
-  "/home/luke/work/salesforce/.git/hooks/pre-commit"
+  "/home/luke/work/cliffrose/salesforce/.git/hooks/pre-commit"
 ```
 Report the symlink was created.
 
@@ -203,7 +203,7 @@ If `--check-only`: note the symlink is missing and show the command to fix it.
 ```bash
 python3 -c "
 import yaml, sys
-with open('/home/luke/work/salesforce/.claude/context.yaml') as f:
+with open('/home/luke/work/cliffrose/salesforce/.claude/context.yaml') as f:
     data = yaml.safe_load(f)
 print('valid')
 print('workspace:', data.get('workspace', {}).get('name', 'unknown'))
